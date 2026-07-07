@@ -1,9 +1,16 @@
+using System.Text;
 using System.Threading.RateLimiting;
 using Asp.Versioning;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi;
 using Serilog;
+using STLMS.API.Authorization;
 using STLMS.API.Middleware;
+using STLMS.API.Services;
 using STLMS.Application;
+using STLMS.Application.Common.Interfaces;
 using STLMS.Infrastructure;
 using STLMS.Infrastructure.Persistence;
 using STLMS.Infrastructure.Persistence.Seed;
@@ -33,7 +40,10 @@ try
                 .AllowCredentials());
     });
 
-    builder.Services.AddControllers();
+    builder.Services.AddControllers(options => options.Filters.Add<CsrfFilter>());
+    builder.Services.AddHttpContextAccessor();
+    builder.Services.AddScoped<ICurrentUserService, CurrentUserService>();
+    builder.Services.AddSingleton<AuthCookieService>();
 
     builder.Services.AddApiVersioning(options =>
     {
@@ -84,8 +94,44 @@ try
                 }));
     });
 
-    // Full JWT bearer scheme registration lands in the Auth & RBAC milestone; AddAuthorization()
-    // alone is enough to support [Authorize] wiring on controllers as they're added incrementally.
+    var jwtSecret = builder.Configuration["Jwt:Secret"]
+        ?? "stlms-dev-only-jwt-signing-secret-do-not-use-in-production-min-32-bytes";
+    builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+        .AddJwtBearer(options =>
+        {
+            // Without this, JwtSecurityTokenHandler silently remaps short claim names ("sub",
+            // "email") to long legacy URIs (ClaimTypes.NameIdentifier/Email) when building the
+            // ClaimsPrincipal - CurrentUserService reads the original short JwtRegisteredClaimNames
+            // values, so without this flag every authenticated request's UserId comes back null.
+            options.MapInboundClaims = false;
+            options.TokenValidationParameters = new TokenValidationParameters
+            {
+                ValidateIssuer = true,
+                ValidIssuer = builder.Configuration["Jwt:Issuer"] ?? "STLMS",
+                ValidateAudience = true,
+                ValidAudience = builder.Configuration["Jwt:Audience"] ?? "STLMS.Client",
+                ValidateIssuerSigningKey = true,
+                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSecret)),
+                ValidateLifetime = true,
+                ClockSkew = TimeSpan.FromSeconds(30),
+            };
+            // The SPA gets its access token as an httpOnly cookie, not an Authorization header -
+            // pull it from there instead of (or in addition to) the header.
+            options.Events = new JwtBearerEvents
+            {
+                OnMessageReceived = context =>
+                {
+                    if (string.IsNullOrEmpty(context.Token) && context.Request.Cookies.TryGetValue("access_token", out var cookieToken))
+                    {
+                        context.Token = cookieToken;
+                    }
+                    return Task.CompletedTask;
+                },
+            };
+        });
+
+    builder.Services.AddSingleton<IAuthorizationPolicyProvider, PermissionPolicyProvider>();
+    builder.Services.AddSingleton<IAuthorizationHandler, PermissionAuthorizationHandler>();
     builder.Services.AddAuthorization();
 
     builder.Services.AddApplication();
@@ -111,7 +157,7 @@ try
     app.UseHttpsRedirection();
     app.UseCors(corsPolicyName);
     app.UseRateLimiter();
-    // app.UseAuthentication() is added once a scheme is registered in the Auth & RBAC milestone.
+    app.UseAuthentication();
     app.UseAuthorization();
     app.MapControllers();
 

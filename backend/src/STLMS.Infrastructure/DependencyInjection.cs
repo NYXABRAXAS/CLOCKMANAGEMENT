@@ -7,8 +7,12 @@ using STLMS.Application.Common.Interfaces;
 using STLMS.Domain.Common;
 using STLMS.Domain.Interfaces;
 using STLMS.Infrastructure.Caching;
+using STLMS.Infrastructure.ExternalServices.Auth;
+using STLMS.Infrastructure.ExternalServices.Email;
+using STLMS.Infrastructure.Identity;
 using STLMS.Infrastructure.Persistence;
 using STLMS.Infrastructure.Persistence.Repositories;
+using STLMS.Infrastructure.Services;
 using StackExchange.Redis;
 
 namespace STLMS.Infrastructure;
@@ -22,6 +26,15 @@ public static class DependencyInjection
 
         services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
         services.AddScoped<IUnitOfWork, UnitOfWork>();
+
+        services.AddSingleton<IPasswordHasher, PasswordHasher>();
+        services.AddSingleton<IEncryptionService, EncryptionService>();
+        services.AddSingleton<ITokenService, TokenService>();
+        services.AddSingleton<ITotpService, TotpService>();
+        services.AddScoped<IEmailSender, SmtpEmailSender>();
+        services.AddScoped<IAuditService, AuditService>();
+        services.AddSingleton<IExternalAuthValidator, GoogleAuthValidator>();
+        services.AddSingleton<IExternalAuthValidator, MicrosoftAuthValidator>();
 
         return services;
     }
