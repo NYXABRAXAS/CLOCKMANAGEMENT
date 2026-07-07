@@ -1,0 +1,14 @@
+<Solution>
+  <Folder Name="/backend/" />
+  <Folder Name="/backend/src/">
+    <Project Path="backend/src/STLMS.API/STLMS.API.csproj" />
+    <Project Path="backend/src/STLMS.Application/STLMS.Application.csproj" />
+    <Project Path="backend/src/STLMS.Domain/STLMS.Domain.csproj" />
+    <Project Path="backend/src/STLMS.Infrastructure/STLMS.Infrastructure.csproj" />
+  </Folder>
+  <Folder Name="/backend/tests/">
+    <Project Path="backend/tests/STLMS.API.IntegrationTests/STLMS.API.IntegrationTests.csproj" />
+    <Project Path="backend/tests/STLMS.Application.Tests/STLMS.Application.Tests.csproj" />
+    <Project Path="backend/tests/STLMS.Domain.Tests/STLMS.Domain.Tests.csproj" />
+  </Folder>
+</Solution>

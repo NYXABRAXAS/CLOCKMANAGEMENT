@@ -1,0 +1,6 @@
+@STLMS.API_HostAddress = http://localhost:5129
+
+GET {{STLMS.API_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
