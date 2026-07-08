@@ -1,0 +1,74 @@
+# Render Blueprint for STLMS.
+#
+# Render has no managed SQL Server offering (Postgres/Redis/etc only), so this deploys against an
+# EXTERNAL SQL Server you provide - e.g. Azure SQL's free tier, or any SQL Server reachable from
+# the internet. Get that connection string BEFORE running this blueprint; you'll be prompted for
+# it (ConnectionStrings__SqlServer, sync: false below).
+#
+# First-deploy URL wiring (same two-phase problem as any blueprint with two dependent services):
+# Vite bakes VITE_API_URL into the frontend bundle at BUILD time, so it can't be known until the
+# API service already has a URL. After the first deploy:
+#   1. Copy stlms-api's *.onrender.com URL.
+#   2. Set it as VITE_API_URL (with /api/v1 appended) on stlms-web, then trigger a manual redeploy
+#      of stlms-web (a full rebuild, not just a restart, since it's baked into the JS bundle).
+#   3. Copy stlms-web's URL, set it as WebUrl + Cors__AllowedOrigins__0 on stlms-api, redeploy.
+#
+# Redis is optional - if Connections__Redis is left blank, the API automatically falls back to an
+# in-memory cache (see STLMS.Infrastructure/DependencyInjection.cs).
+
+services:
+  - type: web
+    name: stlms-api
+    runtime: docker
+    dockerfilePath: ./deployment/docker/backend.Dockerfile
+    dockerContext: .
+    plan: free
+    healthCheckPath: /api/v1/health
+    envVars:
+      - key: ASPNETCORE_ENVIRONMENT
+        value: Production
+      - key: Database__Provider
+        value: SqlServer
+      - key: ConnectionStrings__SqlServer
+        sync: false # paste your external SQL Server connection string here
+      - key: ConnectionStrings__Redis
+        sync: false # optional - leave blank to use the automatic in-memory cache fallback
+      - key: Jwt__Secret
+        generateValue: true
+      - key: Jwt__Issuer
+        value: STLMS
+      - key: Jwt__Audience
+        value: STLMS.Client
+      - key: Encryption__Key
+        generateValue: true
+      - key: Cookie__Secure
+        value: "true"
+      - key: WebUrl
+        sync: false # set to the web service's Render URL after first deploy
+      - key: Cors__AllowedOrigins__0
+        sync: false # same value as WebUrl
+      - key: Smtp__Host
+        sync: false
+      - key: Smtp__Port
+        value: "587"
+      - key: Smtp__Username
+        sync: false
+      - key: Smtp__Password
+        sync: false
+      - key: Smtp__FromAddress
+        sync: false
+      - key: OAuth__Google__ClientId
+        sync: false
+      - key: OAuth__Microsoft__ClientId
+        sync: false
+      - key: OpenWeatherMap__ApiKey
+        sync: false
+
+  - type: web
+    name: stlms-web
+    runtime: docker
+    dockerfilePath: ./deployment/docker/frontend.Dockerfile
+    dockerContext: .
+    dockerBuildArgs:
+      VITE_API_URL: https://REPLACE-WITH-STLMS-API-URL.onrender.com/api/v1
+    plan: free

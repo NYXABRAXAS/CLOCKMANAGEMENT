@@ -1,0 +1,63 @@
+services:
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    environment:
+      ACCEPT_EULA: "Y"
+      MSSQL_SA_PASSWORD: ${MSSQL_SA_PASSWORD:?set MSSQL_SA_PASSWORD in .env}
+    ports:
+      - "1433:1433"
+    volumes:
+      - sqlserver_data:/var/opt/mssql
+    healthcheck:
+      test: ["CMD-SHELL", "/opt/mssql-tools18/bin/sqlcmd -C -S localhost -U sa -P \"$$MSSQL_SA_PASSWORD\" -Q 'SELECT 1' || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+
+  api:
+    build:
+      context: .
+      dockerfile: deployment/docker/backend.Dockerfile
+    depends_on:
+      sqlserver:
+        condition: service_healthy
+    environment:
+      ASPNETCORE_ENVIRONMENT: Production
+      PORT: "8080"
+      Database__Provider: SqlServer
+      ConnectionStrings__SqlServer: "Server=sqlserver,1433;Database=STLMS;User Id=sa;Password=${MSSQL_SA_PASSWORD};TrustServerCertificate=True;"
+      ConnectionStrings__Redis: "redis:6379"
+      Jwt__Secret: ${JWT_SECRET:?set JWT_SECRET in .env}
+      Encryption__Key: ${ENCRYPTION_KEY:?set ENCRYPTION_KEY in .env}
+      Cookie__Secure: "false"
+      WebUrl: "http://localhost:3000"
+      Cors__AllowedOrigins__0: "http://localhost:3000"
+    ports:
+      - "8080:8080"
+    volumes:
+      - api_data:/app/App_Data
+      - api_logs:/app/logs
+
+  web:
+    build:
+      context: .
+      dockerfile: deployment/docker/frontend.Dockerfile
+      args:
+        VITE_API_URL: "http://localhost:8080/api/v1"
+    depends_on:
+      - api
+    ports:
+      - "3000:8080"
+
+volumes:
+  sqlserver_data:
+  redis_data:
+  api_data:
+  api_logs:
