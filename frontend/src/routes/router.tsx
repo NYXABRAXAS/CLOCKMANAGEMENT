@@ -15,6 +15,7 @@ import AlarmsPage from "@/features/alarms/pages/AlarmsPage";
 import CountdownTimerPage from "@/features/timers/pages/CountdownTimerPage";
 import StopwatchPage from "@/features/timers/pages/StopwatchPage";
 import PomodoroPage from "@/features/timers/pages/PomodoroPage";
+import CalendarPage from "@/features/calendar/pages/CalendarPage";
 
 export const router = createBrowserRouter([
   {
@@ -40,6 +41,7 @@ export const router = createBrowserRouter([
           { path: "/countdown-timer", element: <CountdownTimerPage /> },
           { path: "/stopwatch", element: <StopwatchPage /> },
           { path: "/pomodoro", element: <PomodoroPage /> },
+          { path: "/calendar", element: <CalendarPage /> },
           { path: "/settings", element: <SettingsPage /> },
           { path: "/profile", element: <ProfilePage /> },
         ],

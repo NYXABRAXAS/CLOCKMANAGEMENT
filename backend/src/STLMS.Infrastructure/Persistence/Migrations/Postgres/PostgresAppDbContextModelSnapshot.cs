@@ -181,6 +181,86 @@ namespace STLMS.Infrastructure.Persistence.Migrations.Postgres
                     b.ToTable("AuditLogs", (string)null);
                 });
 
+            modelBuilder.Entity("STLMS.Domain.Entities.CalendarEvent", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Color")
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid?>("CreatedById")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(2000)
+                        .HasColumnType("character varying(2000)");
+
+                    b.Property<DateTime>("EndAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("ExternalEventId")
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
+
+                    b.Property<string>("ExternalProvider")
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
+
+                    b.Property<bool>("IsAllDay")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("Location")
+                        .HasMaxLength(300)
+                        .HasColumnType("character varying(300)");
+
+                    b.Property<DateTime?>("ModifiedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid?>("ModifiedById")
+                        .HasColumnType("uuid");
+
+                    b.Property<int>("RecurrenceDaysMask")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime?>("RecurrenceEndDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("RecurrenceFrequency")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("RecurrenceInterval")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime>("StartAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId", "StartAt");
+
+                    b.ToTable("CalendarEvents", (string)null);
+                });
+
             modelBuilder.Entity("STLMS.Domain.Entities.City", b =>
                 {
                     b.Property<Guid>("Id")
@@ -286,6 +366,56 @@ namespace STLMS.Infrastructure.Persistence.Migrations.Postgres
                     b.HasIndex("UserId");
 
                     b.ToTable("CountdownTimers", (string)null);
+                });
+
+            modelBuilder.Entity("STLMS.Domain.Entities.EventCountdown", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Color")
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid?>("CreatedById")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Emoji")
+                        .HasMaxLength(10)
+                        .HasColumnType("character varying(10)");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean");
+
+                    b.Property<DateTime?>("ModifiedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid?>("ModifiedById")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateOnly>("TargetDate")
+                        .HasColumnType("date");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId", "TargetDate");
+
+                    b.ToTable("EventCountdowns", (string)null);
                 });
 
             modelBuilder.Entity("STLMS.Domain.Entities.ExternalLogin", b =>
@@ -1096,7 +1226,29 @@ namespace STLMS.Infrastructure.Persistence.Migrations.Postgres
                     b.Navigation("Alarm");
                 });
 
+            modelBuilder.Entity("STLMS.Domain.Entities.CalendarEvent", b =>
+                {
+                    b.HasOne("STLMS.Domain.Entities.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("STLMS.Domain.Entities.CountdownTimer", b =>
+                {
+                    b.HasOne("STLMS.Domain.Entities.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("STLMS.Domain.Entities.EventCountdown", b =>
                 {
                     b.HasOne("STLMS.Domain.Entities.User", "User")
                         .WithMany()

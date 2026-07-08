@@ -176,6 +176,86 @@ namespace STLMS.Infrastructure.Persistence.Migrations.Sqlite
                     b.ToTable("AuditLogs", (string)null);
                 });
 
+            modelBuilder.Entity("STLMS.Domain.Entities.CalendarEvent", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Color")
+                        .HasMaxLength(20)
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<Guid?>("CreatedById")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(2000)
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("EndAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("ExternalEventId")
+                        .HasMaxLength(200)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("ExternalProvider")
+                        .HasMaxLength(50)
+                        .HasColumnType("TEXT");
+
+                    b.Property<bool>("IsAllDay")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Location")
+                        .HasMaxLength(300)
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime?>("ModifiedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<Guid?>("ModifiedById")
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("RecurrenceDaysMask")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<DateTime?>("RecurrenceEndDate")
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("RecurrenceFrequency")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("RecurrenceInterval")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<DateTime>("StartAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("TEXT");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId", "StartAt");
+
+                    b.ToTable("CalendarEvents", (string)null);
+                });
+
             modelBuilder.Entity("STLMS.Domain.Entities.City", b =>
                 {
                     b.Property<Guid>("Id")
@@ -281,6 +361,56 @@ namespace STLMS.Infrastructure.Persistence.Migrations.Sqlite
                     b.HasIndex("UserId");
 
                     b.ToTable("CountdownTimers", (string)null);
+                });
+
+            modelBuilder.Entity("STLMS.Domain.Entities.EventCountdown", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Color")
+                        .HasMaxLength(20)
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<Guid?>("CreatedById")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Emoji")
+                        .HasMaxLength(10)
+                        .HasColumnType("TEXT");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<DateTime?>("ModifiedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<Guid?>("ModifiedById")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateOnly>("TargetDate")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("TEXT");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId", "TargetDate");
+
+                    b.ToTable("EventCountdowns", (string)null);
                 });
 
             modelBuilder.Entity("STLMS.Domain.Entities.ExternalLogin", b =>
@@ -1091,7 +1221,29 @@ namespace STLMS.Infrastructure.Persistence.Migrations.Sqlite
                     b.Navigation("Alarm");
                 });
 
+            modelBuilder.Entity("STLMS.Domain.Entities.CalendarEvent", b =>
+                {
+                    b.HasOne("STLMS.Domain.Entities.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("STLMS.Domain.Entities.CountdownTimer", b =>
+                {
+                    b.HasOne("STLMS.Domain.Entities.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("STLMS.Domain.Entities.EventCountdown", b =>
                 {
                     b.HasOne("STLMS.Domain.Entities.User", "User")
                         .WithMany()

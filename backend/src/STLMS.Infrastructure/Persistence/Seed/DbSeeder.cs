@@ -9,7 +9,7 @@ public static class PermissionModules
 {
     public static readonly string[] All =
     [
-        "DASHBOARD", "USERS", "ROLES", "RELIGIONS", "SETTINGS", "AUDIT_LOGS", "PROFILE", "WORLD_CLOCK", "ALARMS", "TIMERS",
+        "DASHBOARD", "USERS", "ROLES", "RELIGIONS", "SETTINGS", "AUDIT_LOGS", "PROFILE", "WORLD_CLOCK", "ALARMS", "TIMERS", "CALENDAR",
     ];
 }
 
@@ -87,7 +87,7 @@ public static class DbSeeder
         Grant(admin, allPermissions.Where(p => p.Module != "ROLES" || p.Action == "view"));
 
         // Premium/Standard: full self-service access to their own data, no admin modules.
-        var selfServiceModules = new[] { "DASHBOARD", "SETTINGS", "PROFILE", "WORLD_CLOCK", "ALARMS", "TIMERS" };
+        var selfServiceModules = new[] { "DASHBOARD", "SETTINGS", "PROFILE", "WORLD_CLOCK", "ALARMS", "TIMERS", "CALENDAR" };
         Grant(premium, allPermissions.Where(p => selfServiceModules.Contains(p.Module)));
         Grant(standard, allPermissions.Where(p => selfServiceModules.Contains(p.Module)));
 

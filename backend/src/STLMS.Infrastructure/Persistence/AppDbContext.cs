@@ -37,6 +37,8 @@ public class AppDbContext(DbContextOptions options) : DbContext(options)
     public DbSet<StopwatchLap> StopwatchLaps => Set<StopwatchLap>();
     public DbSet<PomodoroSession> PomodoroSessions => Set<PomodoroSession>();
     public DbSet<PomodoroLog> PomodoroLogs => Set<PomodoroLog>();
+    public DbSet<CalendarEvent> CalendarEvents => Set<CalendarEvent>();
+    public DbSet<EventCountdown> EventCountdowns => Set<EventCountdown>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
