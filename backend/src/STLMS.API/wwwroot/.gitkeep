@@ -1,0 +1,5 @@
+This file exists so wwwroot is always present in a fresh checkout/build - ASP.NET Core's
+WebApplication.CreateBuilder() throws a DirectoryNotFoundException from its static web assets
+loader if this directory is entirely absent at build time (not just empty), which crashes the app
+before it ever reaches a single line of Program.cs. See LocalFileStorageService and Program.cs for
+the runtime-side handling of the uploads/ subdirectory.

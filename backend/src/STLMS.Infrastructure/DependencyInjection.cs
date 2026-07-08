@@ -6,6 +6,7 @@ using Microsoft.Extensions.DependencyInjection;
 using STLMS.Application.Common.Interfaces;
 using STLMS.Domain.Common;
 using STLMS.Domain.Interfaces;
+using STLMS.Infrastructure.BackgroundServices;
 using STLMS.Infrastructure.Caching;
 using STLMS.Infrastructure.ExternalServices.Auth;
 using STLMS.Infrastructure.ExternalServices.Email;
@@ -36,6 +37,8 @@ public static class DependencyInjection
         services.AddSingleton<IExternalAuthValidator, GoogleAuthValidator>();
         services.AddSingleton<IExternalAuthValidator, MicrosoftAuthValidator>();
         services.AddScoped<IFileStorageService, LocalFileStorageService>();
+        services.AddScoped<INotificationDispatcher, NotificationDispatcher>();
+        services.AddHostedService<AlarmTriggerService>();
 
         return services;
     }

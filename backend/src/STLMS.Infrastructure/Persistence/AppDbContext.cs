@@ -29,6 +29,9 @@ public class AppDbContext(DbContextOptions options) : DbContext(options)
     public DbSet<AuditLog> AuditLogs => Set<AuditLog>();
     public DbSet<City> Cities => Set<City>();
     public DbSet<WorldClockCity> WorldClockCities => Set<WorldClockCity>();
+    public DbSet<Alarm> Alarms => Set<Alarm>();
+    public DbSet<AlarmHistory> AlarmHistories => Set<AlarmHistory>();
+    public DbSet<Notification> Notifications => Set<Notification>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

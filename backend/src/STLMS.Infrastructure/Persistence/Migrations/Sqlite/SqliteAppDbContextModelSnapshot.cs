@@ -17,6 +17,114 @@ namespace STLMS.Infrastructure.Persistence.Migrations.Sqlite
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "10.0.0");
 
+            modelBuilder.Entity("STLMS.Domain.Entities.Alarm", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("ChallengeType")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<Guid?>("CreatedById")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("Hour")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<bool>("IsEnabled")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Label")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("Minute")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<DateTime?>("ModifiedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<Guid?>("ModifiedById")
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("RepeatDaysMask")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<bool>("SnoozeEnabled")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("SnoozeMinutes")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("SoundId")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("TEXT");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId", "IsEnabled");
+
+                    b.ToTable("Alarms", (string)null);
+                });
+
+            modelBuilder.Entity("STLMS.Domain.Entities.AlarmHistory", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("Action")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<Guid>("AlarmId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<Guid?>("CreatedById")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<DateTime?>("ModifiedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<Guid?>("ModifiedById")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("OccurredAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AlarmId", "OccurredAt");
+
+                    b.ToTable("AlarmHistories", (string)null);
+                });
+
             modelBuilder.Entity("STLMS.Domain.Entities.AuditLog", b =>
                 {
                     b.Property<Guid>("Id")
@@ -170,6 +278,53 @@ namespace STLMS.Infrastructure.Persistence.Migrations.Sqlite
                         .IsUnique();
 
                     b.ToTable("ExternalLogins", (string)null);
+                });
+
+            modelBuilder.Entity("STLMS.Domain.Entities.Notification", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<Guid?>("CreatedById")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<bool>("IsRead")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Message")
+                        .IsRequired()
+                        .HasMaxLength(1000)
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime?>("ModifiedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<Guid?>("ModifiedById")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("TEXT");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId", "IsRead");
+
+                    b.ToTable("Notifications", (string)null);
                 });
 
             modelBuilder.Entity("STLMS.Domain.Entities.Permission", b =>
@@ -678,10 +833,43 @@ namespace STLMS.Infrastructure.Persistence.Migrations.Sqlite
                     b.ToTable("WorldClockCities", (string)null);
                 });
 
+            modelBuilder.Entity("STLMS.Domain.Entities.Alarm", b =>
+                {
+                    b.HasOne("STLMS.Domain.Entities.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("STLMS.Domain.Entities.AlarmHistory", b =>
+                {
+                    b.HasOne("STLMS.Domain.Entities.Alarm", "Alarm")
+                        .WithMany("History")
+                        .HasForeignKey("AlarmId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Alarm");
+                });
+
             modelBuilder.Entity("STLMS.Domain.Entities.ExternalLogin", b =>
                 {
                     b.HasOne("STLMS.Domain.Entities.User", "User")
                         .WithMany("ExternalLogins")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("STLMS.Domain.Entities.Notification", b =>
+                {
+                    b.HasOne("STLMS.Domain.Entities.User", "User")
+                        .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -776,6 +964,11 @@ namespace STLMS.Infrastructure.Persistence.Migrations.Sqlite
                     b.Navigation("City");
 
                     b.Navigation("User");
+                });
+
+            modelBuilder.Entity("STLMS.Domain.Entities.Alarm", b =>
+                {
+                    b.Navigation("History");
                 });
 
             modelBuilder.Entity("STLMS.Domain.Entities.Permission", b =>

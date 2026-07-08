@@ -9,6 +9,7 @@ import { queryClient } from "@/shared/lib/queryClient";
 import { ThemeProvider } from "@/shared/components/ThemeProvider";
 import { router } from "@/routes/router";
 import { bootstrapAuth } from "@/features/auth/authSlice";
+import { AlarmRingingOverlay } from "@/features/alarms/components/AlarmRingingOverlay";
 
 function AuthBootstrap() {
   const dispatch = useAppDispatch();
@@ -25,6 +26,7 @@ function App() {
         <ThemeProvider>
           <AuthBootstrap />
           <RouterProvider router={router} />
+          <AlarmRingingOverlay />
           <Toaster richColors position="top-right" />
         </ThemeProvider>
       </QueryClientProvider>

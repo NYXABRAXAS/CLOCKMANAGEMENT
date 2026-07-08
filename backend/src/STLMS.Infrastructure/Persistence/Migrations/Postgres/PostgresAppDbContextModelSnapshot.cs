@@ -22,6 +22,114 @@ namespace STLMS.Infrastructure.Persistence.Migrations.Postgres
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
+            modelBuilder.Entity("STLMS.Domain.Entities.Alarm", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<int>("ChallengeType")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid?>("CreatedById")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("Hour")
+                        .HasColumnType("integer");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool>("IsEnabled")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("Label")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
+
+                    b.Property<int>("Minute")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime?>("ModifiedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid?>("ModifiedById")
+                        .HasColumnType("uuid");
+
+                    b.Property<int>("RepeatDaysMask")
+                        .HasColumnType("integer");
+
+                    b.Property<bool>("SnoozeEnabled")
+                        .HasColumnType("boolean");
+
+                    b.Property<int>("SnoozeMinutes")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("SoundId")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId", "IsEnabled");
+
+                    b.ToTable("Alarms", (string)null);
+                });
+
+            modelBuilder.Entity("STLMS.Domain.Entities.AlarmHistory", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<int>("Action")
+                        .HasColumnType("integer");
+
+                    b.Property<Guid>("AlarmId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid?>("CreatedById")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean");
+
+                    b.Property<DateTime?>("ModifiedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid?>("ModifiedById")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("OccurredAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AlarmId", "OccurredAt");
+
+                    b.ToTable("AlarmHistories", (string)null);
+                });
+
             modelBuilder.Entity("STLMS.Domain.Entities.AuditLog", b =>
                 {
                     b.Property<Guid>("Id")
@@ -175,6 +283,53 @@ namespace STLMS.Infrastructure.Persistence.Migrations.Postgres
                         .IsUnique();
 
                     b.ToTable("ExternalLogins", (string)null);
+                });
+
+            modelBuilder.Entity("STLMS.Domain.Entities.Notification", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid?>("CreatedById")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool>("IsRead")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("Message")
+                        .IsRequired()
+                        .HasMaxLength(1000)
+                        .HasColumnType("character varying(1000)");
+
+                    b.Property<DateTime?>("ModifiedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid?>("ModifiedById")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId", "IsRead");
+
+                    b.ToTable("Notifications", (string)null);
                 });
 
             modelBuilder.Entity("STLMS.Domain.Entities.Permission", b =>
@@ -683,10 +838,43 @@ namespace STLMS.Infrastructure.Persistence.Migrations.Postgres
                     b.ToTable("WorldClockCities", (string)null);
                 });
 
+            modelBuilder.Entity("STLMS.Domain.Entities.Alarm", b =>
+                {
+                    b.HasOne("STLMS.Domain.Entities.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("STLMS.Domain.Entities.AlarmHistory", b =>
+                {
+                    b.HasOne("STLMS.Domain.Entities.Alarm", "Alarm")
+                        .WithMany("History")
+                        .HasForeignKey("AlarmId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Alarm");
+                });
+
             modelBuilder.Entity("STLMS.Domain.Entities.ExternalLogin", b =>
                 {
                     b.HasOne("STLMS.Domain.Entities.User", "User")
                         .WithMany("ExternalLogins")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("STLMS.Domain.Entities.Notification", b =>
+                {
+                    b.HasOne("STLMS.Domain.Entities.User", "User")
+                        .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -781,6 +969,11 @@ namespace STLMS.Infrastructure.Persistence.Migrations.Postgres
                     b.Navigation("City");
 
                     b.Navigation("User");
+                });
+
+            modelBuilder.Entity("STLMS.Domain.Entities.Alarm", b =>
+                {
+                    b.Navigation("History");
                 });
 
             modelBuilder.Entity("STLMS.Domain.Entities.Permission", b =>
