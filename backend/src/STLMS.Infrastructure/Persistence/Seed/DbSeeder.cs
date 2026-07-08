@@ -90,6 +90,12 @@ public static class DbSeeder
         Grant(premium, allPermissions.Where(p => selfServiceModules.Contains(p.Module)));
         Grant(standard, allPermissions.Where(p => selfServiceModules.Contains(p.Module)));
 
+        // Everyone can read the religions list (it's reference data used by the Settings picker) -
+        // only Admin/SuperAdmin can manage the list itself (grant above already covers that).
+        Grant(premium, allPermissions.Where(p => p.Module == "RELIGIONS" && p.Action == "view"));
+        Grant(standard, allPermissions.Where(p => p.Module == "RELIGIONS" && p.Action == "view"));
+        Grant(guest, allPermissions.Where(p => p.Module == "RELIGIONS" && p.Action == "view"));
+
         // Guest: view-only.
         Grant(guest, allPermissions.Where(p => selfServiceModules.Contains(p.Module) && p.Action == "view"));
 

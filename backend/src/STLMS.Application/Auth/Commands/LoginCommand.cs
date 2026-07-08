@@ -96,6 +96,14 @@ public class LoginCommandHandler(
     internal static async Task<AuthResultDto> IssueAuthResultAsync(
         IUnitOfWork uow, ITokenService tokenService, User user, bool rememberMe, string? ipAddress, string? userAgent, CancellationToken ct)
     {
+        // Religion is a nav property, never eager-loaded by the repository - without this, every
+        // login/refresh/2FA/external-login response would report religionCode as null regardless
+        // of what's actually stored (only GetCurrentUserQuery used to do this lookup).
+        if (user.ReligionId is { } religionId)
+        {
+            user.Religion = await uow.Repository<Religion>().GetByIdAsync(religionId, ct);
+        }
+
         var (roles, permissions) = await UserAccessLoader.LoadAsync(uow, user.Id, ct);
 
         var accessToken = tokenService.GenerateAccessToken(user.Id, user.Email, roles, permissions);

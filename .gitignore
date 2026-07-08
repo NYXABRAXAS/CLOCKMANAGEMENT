@@ -8,6 +8,7 @@ obj/
 **/App_Data/*.db-wal
 logs/
 *.log
+**/wwwroot/uploads/
 
 # Node / frontend
 node_modules/

@@ -35,6 +35,7 @@ public static class DependencyInjection
         services.AddScoped<IAuditService, AuditService>();
         services.AddSingleton<IExternalAuthValidator, GoogleAuthValidator>();
         services.AddSingleton<IExternalAuthValidator, MicrosoftAuthValidator>();
+        services.AddScoped<IFileStorageService, LocalFileStorageService>();
 
         return services;
     }

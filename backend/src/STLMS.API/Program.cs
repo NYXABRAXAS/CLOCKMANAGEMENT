@@ -145,6 +145,15 @@ try
         await DbSeeder.SeedAsync(db);
     }
 
+    // ASP.NET Core snapshots WebRootFileProvider once, when the host builds - if wwwroot doesn't
+    // exist yet at that point (it's only ever created lazily, on the first profile photo upload -
+    // see LocalFileStorageService), the provider becomes a NullFileProvider and uploaded files
+    // 404 forever even after the directory shows up. Force it to exist and refresh the provider
+    // before wiring up UseStaticFiles().
+    Directory.CreateDirectory(Path.Combine(app.Environment.ContentRootPath, "wwwroot", "uploads", "profile-photos"));
+    app.Environment.WebRootPath = Path.Combine(app.Environment.ContentRootPath, "wwwroot");
+    app.Environment.WebRootFileProvider = new Microsoft.Extensions.FileProviders.PhysicalFileProvider(app.Environment.WebRootPath);
+
     app.UseSerilogRequestLogging();
     app.UseMiddleware<ExceptionHandlingMiddleware>();
 
@@ -155,6 +164,7 @@ try
     }
 
     app.UseHttpsRedirection();
+    app.UseStaticFiles(); // serves uploaded profile photos from wwwroot/uploads - see LocalFileStorageService
     app.UseCors(corsPolicyName);
     app.UseRateLimiter();
     app.UseAuthentication();
