@@ -27,6 +27,8 @@ public class AppDbContext(DbContextOptions options) : DbContext(options)
     public DbSet<UserSession> UserSessions => Set<UserSession>();
     public DbSet<Religion> Religions => Set<Religion>();
     public DbSet<AuditLog> AuditLogs => Set<AuditLog>();
+    public DbSet<City> Cities => Set<City>();
+    public DbSet<WorldClockCity> WorldClockCities => Set<WorldClockCity>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

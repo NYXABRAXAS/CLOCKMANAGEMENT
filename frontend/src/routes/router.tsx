@@ -9,6 +9,8 @@ import VerifyEmailPage from "@/features/auth/pages/VerifyEmailPage";
 import DashboardPage from "@/features/dashboard/pages/DashboardPage";
 import SettingsPage from "@/features/settings/pages/SettingsPage";
 import ProfilePage from "@/features/profile/pages/ProfilePage";
+import WorldClockPage from "@/features/worldClock/pages/WorldClockPage";
+import TimezoneConverterPage from "@/features/worldClock/pages/TimezoneConverterPage";
 
 export const router = createBrowserRouter([
   {
@@ -28,6 +30,8 @@ export const router = createBrowserRouter([
         element: <AppShell />,
         children: [
           { path: "/dashboard", element: <DashboardPage /> },
+          { path: "/world-clock", element: <WorldClockPage /> },
+          { path: "/timezone-converter", element: <TimezoneConverterPage /> },
           { path: "/settings", element: <SettingsPage /> },
           { path: "/profile", element: <ProfilePage /> },
         ],

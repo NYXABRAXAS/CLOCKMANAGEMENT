@@ -1,5 +1,5 @@
 import { Link } from "react-router";
-import { Settings, ShieldCheck, User as UserIcon } from "lucide-react";
+import { Clock, Settings, ShieldCheck, User as UserIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useAppSelector } from "@/app/hooks";
@@ -48,6 +48,11 @@ export default function DashboardPage() {
           </CardHeader>
           <CardContent className="flex flex-col gap-2">
             <Button variant="outline" className="justify-start" asChild>
+              <Link to="/world-clock">
+                <Clock /> World Clock
+              </Link>
+            </Button>
+            <Button variant="outline" className="justify-start" asChild>
               <Link to="/profile">
                 <UserIcon /> Edit profile
               </Link>
@@ -65,8 +70,8 @@ export default function DashboardPage() {
         <CardHeader>
           <CardTitle>More on the way</CardTitle>
           <CardDescription>
-            World clock, alarms, timers, calendar, habit tracking, the prayer &amp; festival center, and productivity insights
-            land here as each module is built.
+            Alarms, timers, calendar, habit tracking, the prayer &amp; festival center, and productivity insights land here
+            as each module is built.
           </CardDescription>
         </CardHeader>
       </Card>

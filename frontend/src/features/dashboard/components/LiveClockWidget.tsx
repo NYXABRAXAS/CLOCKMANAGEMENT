@@ -1,15 +1,6 @@
-import * as React from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useAppSelector } from "@/app/hooks";
-
-function useNow(intervalMs = 1000) {
-  const [now, setNow] = React.useState(() => new Date());
-  React.useEffect(() => {
-    const id = setInterval(() => setNow(new Date()), intervalMs);
-    return () => clearInterval(id);
-  }, [intervalMs]);
-  return now;
-}
+import { useNow } from "@/shared/lib/useNow";
 
 export function LiveClockWidget() {
   const user = useAppSelector((s) => s.auth.user);
