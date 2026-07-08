@@ -16,6 +16,9 @@ import CountdownTimerPage from "@/features/timers/pages/CountdownTimerPage";
 import StopwatchPage from "@/features/timers/pages/StopwatchPage";
 import PomodoroPage from "@/features/timers/pages/PomodoroPage";
 import CalendarPage from "@/features/calendar/pages/CalendarPage";
+import MedicinesPage from "@/features/health/pages/MedicinesPage";
+import HabitsPage from "@/features/health/pages/HabitsPage";
+import SleepPage from "@/features/health/pages/SleepPage";
 
 export const router = createBrowserRouter([
   {
@@ -42,6 +45,9 @@ export const router = createBrowserRouter([
           { path: "/stopwatch", element: <StopwatchPage /> },
           { path: "/pomodoro", element: <PomodoroPage /> },
           { path: "/calendar", element: <CalendarPage /> },
+          { path: "/medicines", element: <MedicinesPage /> },
+          { path: "/habits", element: <HabitsPage /> },
+          { path: "/sleep", element: <SleepPage /> },
           { path: "/settings", element: <SettingsPage /> },
           { path: "/profile", element: <ProfilePage /> },
         ],

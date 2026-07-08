@@ -1,4 +1,4 @@
-import { AlarmClock, CalendarDays, Clock, Coffee, Hourglass, LayoutDashboard, Repeat, Settings, Timer, User } from "lucide-react";
+import { AlarmClock, CalendarDays, Clock, Coffee, Hourglass, LayoutDashboard, ListChecks, Moon, Pill, Repeat, Settings, Timer, User } from "lucide-react";
 
 export interface NavItem {
   to: string;
@@ -17,6 +17,9 @@ export const navItems: NavItem[] = [
   { to: "/stopwatch", label: "Stopwatch", icon: Timer },
   { to: "/pomodoro", label: "Pomodoro", icon: Coffee },
   { to: "/calendar", label: "Calendar", icon: CalendarDays },
+  { to: "/medicines", label: "Medicines", icon: Pill },
+  { to: "/habits", label: "Habits", icon: ListChecks },
+  { to: "/sleep", label: "Sleep Tracker", icon: Moon },
   { to: "/settings", label: "Settings", icon: Settings },
   { to: "/profile", label: "Profile", icon: User },
 ];

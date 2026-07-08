@@ -39,6 +39,14 @@ public class AppDbContext(DbContextOptions options) : DbContext(options)
     public DbSet<PomodoroLog> PomodoroLogs => Set<PomodoroLog>();
     public DbSet<CalendarEvent> CalendarEvents => Set<CalendarEvent>();
     public DbSet<EventCountdown> EventCountdowns => Set<EventCountdown>();
+    public DbSet<Medicine> Medicines => Set<Medicine>();
+    public DbSet<MedicineTime> MedicineTimes => Set<MedicineTime>();
+    public DbSet<MedicineLog> MedicineLogs => Set<MedicineLog>();
+    public DbSet<Habit> Habits => Set<Habit>();
+    public DbSet<HabitLog> HabitLogs => Set<HabitLog>();
+    public DbSet<SleepLog> SleepLogs => Set<SleepLog>();
+    public DbSet<Achievement> Achievements => Set<Achievement>();
+    public DbSet<UserAchievement> UserAchievements => Set<UserAchievement>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

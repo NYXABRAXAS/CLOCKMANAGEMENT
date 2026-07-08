@@ -9,7 +9,7 @@ public static class PermissionModules
 {
     public static readonly string[] All =
     [
-        "DASHBOARD", "USERS", "ROLES", "RELIGIONS", "SETTINGS", "AUDIT_LOGS", "PROFILE", "WORLD_CLOCK", "ALARMS", "TIMERS", "CALENDAR",
+        "DASHBOARD", "USERS", "ROLES", "RELIGIONS", "SETTINGS", "AUDIT_LOGS", "PROFILE", "WORLD_CLOCK", "ALARMS", "TIMERS", "CALENDAR", "HEALTH",
     ];
 }
 
@@ -24,6 +24,7 @@ public static class DbSeeder
         await SeedRolePermissionsAsync(context);
         await SeedReligionsAsync(context);
         await SeedCitiesAsync(context);
+        await SeedAchievementsAsync(context);
 
         await context.SaveChangesAsync();
     }
@@ -87,7 +88,7 @@ public static class DbSeeder
         Grant(admin, allPermissions.Where(p => p.Module != "ROLES" || p.Action == "view"));
 
         // Premium/Standard: full self-service access to their own data, no admin modules.
-        var selfServiceModules = new[] { "DASHBOARD", "SETTINGS", "PROFILE", "WORLD_CLOCK", "ALARMS", "TIMERS", "CALENDAR" };
+        var selfServiceModules = new[] { "DASHBOARD", "SETTINGS", "PROFILE", "WORLD_CLOCK", "ALARMS", "TIMERS", "CALENDAR", "HEALTH" };
         Grant(premium, allPermissions.Where(p => selfServiceModules.Contains(p.Module)));
         Grant(standard, allPermissions.Where(p => selfServiceModules.Contains(p.Module)));
 
@@ -235,6 +236,19 @@ public static class DbSeeder
             C("Auckland", "New Zealand", "NZ", "Pacific/Auckland", -36.8485, 174.7633),
             C("Wellington", "New Zealand", "NZ", "Pacific/Auckland", -41.2865, 174.7762),
             C("Nuku'alofa", "Tonga", "TO", "Pacific/Tongatapu", -21.1789, -175.1982)
+        );
+        await context.SaveChangesAsync();
+    }
+
+    private static async Task SeedAchievementsAsync(AppDbContext context)
+    {
+        if (await context.Achievements.AnyAsync()) return;
+
+        context.Achievements.AddRange(
+            new Achievement { Code = AchievementCodes.HabitFirstCheckIn, Title = "First Step", Description = "Completed your first habit check-in.", Emoji = "🌱", IsSystem = true },
+            new Achievement { Code = AchievementCodes.HabitStreak7, Title = "Week Strong", Description = "Kept a habit streak for 7 days in a row.", Emoji = "🔥", IsSystem = true },
+            new Achievement { Code = AchievementCodes.HabitStreak30, Title = "Month Master", Description = "Kept a habit streak for 30 days in a row.", Emoji = "🏆", IsSystem = true },
+            new Achievement { Code = AchievementCodes.HabitCheckIns100, Title = "Centurion", Description = "Logged 100 total habit check-ins.", Emoji = "💯", IsSystem = true }
         );
         await context.SaveChangesAsync();
     }
