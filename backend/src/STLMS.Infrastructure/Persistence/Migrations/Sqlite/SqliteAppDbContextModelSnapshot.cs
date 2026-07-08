@@ -236,6 +236,53 @@ namespace STLMS.Infrastructure.Persistence.Migrations.Sqlite
                     b.ToTable("Cities", (string)null);
                 });
 
+            modelBuilder.Entity("STLMS.Domain.Entities.CountdownTimer", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<Guid?>("CreatedById")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("DurationSeconds")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Label")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime?>("ModifiedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<Guid?>("ModifiedById")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("SoundId")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("TEXT");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("CountdownTimers", (string)null);
+                });
+
             modelBuilder.Entity("STLMS.Domain.Entities.ExternalLogin", b =>
                 {
                     b.Property<Guid>("Id")
@@ -367,6 +414,104 @@ namespace STLMS.Infrastructure.Persistence.Migrations.Sqlite
                         .IsUnique();
 
                     b.ToTable("Permissions", (string)null);
+                });
+
+            modelBuilder.Entity("STLMS.Domain.Entities.PomodoroLog", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("TEXT");
+
+                    b.Property<bool>("CompletedFully")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<Guid?>("CreatedById")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("EndedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<DateTime?>("ModifiedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<Guid?>("ModifiedById")
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("Phase")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<Guid>("PomodoroSessionId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("StartedAt")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("PomodoroSessionId", "StartedAt");
+
+                    b.ToTable("PomodoroLogs", (string)null);
+                });
+
+            modelBuilder.Entity("STLMS.Domain.Entities.PomodoroSession", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<Guid?>("CreatedById")
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("CyclesBeforeLongBreak")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime?>("EndedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("LongBreakMinutes")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<DateTime?>("ModifiedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<Guid?>("ModifiedById")
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("ShortBreakMinutes")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<DateTime>("StartedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("WorkMinutes")
+                        .HasColumnType("INTEGER");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId", "StartedAt");
+
+                    b.ToTable("PomodoroSessions", (string)null);
                 });
 
             modelBuilder.Entity("STLMS.Domain.Entities.RefreshToken", b =>
@@ -569,6 +714,97 @@ namespace STLMS.Infrastructure.Persistence.Migrations.Sqlite
                         .IsUnique();
 
                     b.ToTable("RolePermissions", (string)null);
+                });
+
+            modelBuilder.Entity("STLMS.Domain.Entities.StopwatchLap", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<Guid?>("CreatedById")
+                        .HasColumnType("TEXT");
+
+                    b.Property<long>("CumulativeDurationMs")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<long>("LapDurationMs")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("LapNumber")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<DateTime?>("ModifiedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<Guid?>("ModifiedById")
+                        .HasColumnType("TEXT");
+
+                    b.Property<Guid>("StopwatchSessionId")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("StopwatchSessionId", "LapNumber");
+
+                    b.ToTable("StopwatchLaps", (string)null);
+                });
+
+            modelBuilder.Entity("STLMS.Domain.Entities.StopwatchSession", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<Guid?>("CreatedById")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("EndedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Label")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime?>("ModifiedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<Guid?>("ModifiedById")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("StartedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<long>("TotalDurationMs")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId", "StartedAt");
+
+                    b.ToTable("StopwatchSessions", (string)null);
                 });
 
             modelBuilder.Entity("STLMS.Domain.Entities.User", b =>
@@ -855,6 +1091,17 @@ namespace STLMS.Infrastructure.Persistence.Migrations.Sqlite
                     b.Navigation("Alarm");
                 });
 
+            modelBuilder.Entity("STLMS.Domain.Entities.CountdownTimer", b =>
+                {
+                    b.HasOne("STLMS.Domain.Entities.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("STLMS.Domain.Entities.ExternalLogin", b =>
                 {
                     b.HasOne("STLMS.Domain.Entities.User", "User")
@@ -867,6 +1114,28 @@ namespace STLMS.Infrastructure.Persistence.Migrations.Sqlite
                 });
 
             modelBuilder.Entity("STLMS.Domain.Entities.Notification", b =>
+                {
+                    b.HasOne("STLMS.Domain.Entities.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("STLMS.Domain.Entities.PomodoroLog", b =>
+                {
+                    b.HasOne("STLMS.Domain.Entities.PomodoroSession", "PomodoroSession")
+                        .WithMany("Logs")
+                        .HasForeignKey("PomodoroSessionId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("PomodoroSession");
+                });
+
+            modelBuilder.Entity("STLMS.Domain.Entities.PomodoroSession", b =>
                 {
                     b.HasOne("STLMS.Domain.Entities.User", "User")
                         .WithMany()
@@ -905,6 +1174,28 @@ namespace STLMS.Infrastructure.Persistence.Migrations.Sqlite
                     b.Navigation("Permission");
 
                     b.Navigation("Role");
+                });
+
+            modelBuilder.Entity("STLMS.Domain.Entities.StopwatchLap", b =>
+                {
+                    b.HasOne("STLMS.Domain.Entities.StopwatchSession", "StopwatchSession")
+                        .WithMany("Laps")
+                        .HasForeignKey("StopwatchSessionId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("StopwatchSession");
+                });
+
+            modelBuilder.Entity("STLMS.Domain.Entities.StopwatchSession", b =>
+                {
+                    b.HasOne("STLMS.Domain.Entities.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("STLMS.Domain.Entities.User", b =>
@@ -976,11 +1267,21 @@ namespace STLMS.Infrastructure.Persistence.Migrations.Sqlite
                     b.Navigation("RolePermissions");
                 });
 
+            modelBuilder.Entity("STLMS.Domain.Entities.PomodoroSession", b =>
+                {
+                    b.Navigation("Logs");
+                });
+
             modelBuilder.Entity("STLMS.Domain.Entities.Role", b =>
                 {
                     b.Navigation("RolePermissions");
 
                     b.Navigation("UserRoles");
+                });
+
+            modelBuilder.Entity("STLMS.Domain.Entities.StopwatchSession", b =>
+                {
+                    b.Navigation("Laps");
                 });
 
             modelBuilder.Entity("STLMS.Domain.Entities.User", b =>

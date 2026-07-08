@@ -59,3 +59,11 @@ export function stopAlarmSound() {
     intervalId = null;
   }
 }
+
+/** A single non-looping chime - used for transient events (e.g. a Pomodoro phase change) that
+ * shouldn't ring indefinitely like an alarm. */
+export function playChimeOnce(soundId = "gentle") {
+  audioContext ??= new AudioContext();
+  if (audioContext.state === "suspended") void audioContext.resume();
+  playPattern(audioContext, soundId);
+}

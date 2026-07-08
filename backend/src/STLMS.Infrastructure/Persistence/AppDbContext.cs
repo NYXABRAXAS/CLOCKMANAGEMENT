@@ -32,6 +32,11 @@ public class AppDbContext(DbContextOptions options) : DbContext(options)
     public DbSet<Alarm> Alarms => Set<Alarm>();
     public DbSet<AlarmHistory> AlarmHistories => Set<AlarmHistory>();
     public DbSet<Notification> Notifications => Set<Notification>();
+    public DbSet<CountdownTimer> CountdownTimers => Set<CountdownTimer>();
+    public DbSet<StopwatchSession> StopwatchSessions => Set<StopwatchSession>();
+    public DbSet<StopwatchLap> StopwatchLaps => Set<StopwatchLap>();
+    public DbSet<PomodoroSession> PomodoroSessions => Set<PomodoroSession>();
+    public DbSet<PomodoroLog> PomodoroLogs => Set<PomodoroLog>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

@@ -1,5 +1,5 @@
 import { Link } from "react-router";
-import { AlarmClock, Clock, Settings, ShieldCheck, User as UserIcon } from "lucide-react";
+import { AlarmClock, Clock, Coffee, Hourglass, Settings, ShieldCheck, Timer, User as UserIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useAppSelector } from "@/app/hooks";
@@ -58,6 +58,21 @@ export default function DashboardPage() {
               </Link>
             </Button>
             <Button variant="outline" className="justify-start" asChild>
+              <Link to="/countdown-timer">
+                <Hourglass /> Countdown Timer
+              </Link>
+            </Button>
+            <Button variant="outline" className="justify-start" asChild>
+              <Link to="/stopwatch">
+                <Timer /> Stopwatch
+              </Link>
+            </Button>
+            <Button variant="outline" className="justify-start" asChild>
+              <Link to="/pomodoro">
+                <Coffee /> Pomodoro
+              </Link>
+            </Button>
+            <Button variant="outline" className="justify-start" asChild>
               <Link to="/profile">
                 <UserIcon /> Edit profile
               </Link>
@@ -75,8 +90,8 @@ export default function DashboardPage() {
         <CardHeader>
           <CardTitle>More on the way</CardTitle>
           <CardDescription>
-            Timers, calendar, habit tracking, the prayer &amp; festival center, and productivity insights land here as each
-            module is built.
+            Calendar, habit tracking, the prayer &amp; festival center, and productivity insights land here as each module
+            is built.
           </CardDescription>
         </CardHeader>
       </Card>

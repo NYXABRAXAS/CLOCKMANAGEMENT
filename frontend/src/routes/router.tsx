@@ -12,6 +12,9 @@ import ProfilePage from "@/features/profile/pages/ProfilePage";
 import WorldClockPage from "@/features/worldClock/pages/WorldClockPage";
 import TimezoneConverterPage from "@/features/worldClock/pages/TimezoneConverterPage";
 import AlarmsPage from "@/features/alarms/pages/AlarmsPage";
+import CountdownTimerPage from "@/features/timers/pages/CountdownTimerPage";
+import StopwatchPage from "@/features/timers/pages/StopwatchPage";
+import PomodoroPage from "@/features/timers/pages/PomodoroPage";
 
 export const router = createBrowserRouter([
   {
@@ -34,6 +37,9 @@ export const router = createBrowserRouter([
           { path: "/world-clock", element: <WorldClockPage /> },
           { path: "/timezone-converter", element: <TimezoneConverterPage /> },
           { path: "/alarms", element: <AlarmsPage /> },
+          { path: "/countdown-timer", element: <CountdownTimerPage /> },
+          { path: "/stopwatch", element: <StopwatchPage /> },
+          { path: "/pomodoro", element: <PomodoroPage /> },
           { path: "/settings", element: <SettingsPage /> },
           { path: "/profile", element: <ProfilePage /> },
         ],

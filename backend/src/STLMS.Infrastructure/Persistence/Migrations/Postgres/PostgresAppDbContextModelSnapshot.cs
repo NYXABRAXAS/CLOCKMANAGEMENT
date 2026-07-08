@@ -241,6 +241,53 @@ namespace STLMS.Infrastructure.Persistence.Migrations.Postgres
                     b.ToTable("Cities", (string)null);
                 });
 
+            modelBuilder.Entity("STLMS.Domain.Entities.CountdownTimer", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid?>("CreatedById")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("DurationSeconds")
+                        .HasColumnType("integer");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("Label")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
+
+                    b.Property<DateTime?>("ModifiedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid?>("ModifiedById")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("SoundId")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("CountdownTimers", (string)null);
+                });
+
             modelBuilder.Entity("STLMS.Domain.Entities.ExternalLogin", b =>
                 {
                     b.Property<Guid>("Id")
@@ -372,6 +419,104 @@ namespace STLMS.Infrastructure.Persistence.Migrations.Postgres
                         .IsUnique();
 
                     b.ToTable("Permissions", (string)null);
+                });
+
+            modelBuilder.Entity("STLMS.Domain.Entities.PomodoroLog", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<bool>("CompletedFully")
+                        .HasColumnType("boolean");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid?>("CreatedById")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime>("EndedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean");
+
+                    b.Property<DateTime?>("ModifiedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid?>("ModifiedById")
+                        .HasColumnType("uuid");
+
+                    b.Property<int>("Phase")
+                        .HasColumnType("integer");
+
+                    b.Property<Guid>("PomodoroSessionId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("StartedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("PomodoroSessionId", "StartedAt");
+
+                    b.ToTable("PomodoroLogs", (string)null);
+                });
+
+            modelBuilder.Entity("STLMS.Domain.Entities.PomodoroSession", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid?>("CreatedById")
+                        .HasColumnType("uuid");
+
+                    b.Property<int>("CyclesBeforeLongBreak")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime?>("EndedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean");
+
+                    b.Property<int>("LongBreakMinutes")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime?>("ModifiedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid?>("ModifiedById")
+                        .HasColumnType("uuid");
+
+                    b.Property<int>("ShortBreakMinutes")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime>("StartedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uuid");
+
+                    b.Property<int>("WorkMinutes")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId", "StartedAt");
+
+                    b.ToTable("PomodoroSessions", (string)null);
                 });
 
             modelBuilder.Entity("STLMS.Domain.Entities.RefreshToken", b =>
@@ -574,6 +719,97 @@ namespace STLMS.Infrastructure.Persistence.Migrations.Postgres
                         .IsUnique();
 
                     b.ToTable("RolePermissions", (string)null);
+                });
+
+            modelBuilder.Entity("STLMS.Domain.Entities.StopwatchLap", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid?>("CreatedById")
+                        .HasColumnType("uuid");
+
+                    b.Property<long>("CumulativeDurationMs")
+                        .HasColumnType("bigint");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean");
+
+                    b.Property<long>("LapDurationMs")
+                        .HasColumnType("bigint");
+
+                    b.Property<int>("LapNumber")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime?>("ModifiedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid?>("ModifiedById")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("StopwatchSessionId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("StopwatchSessionId", "LapNumber");
+
+                    b.ToTable("StopwatchLaps", (string)null);
+                });
+
+            modelBuilder.Entity("STLMS.Domain.Entities.StopwatchSession", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid?>("CreatedById")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime>("EndedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("Label")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
+
+                    b.Property<DateTime?>("ModifiedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid?>("ModifiedById")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("StartedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<long>("TotalDurationMs")
+                        .HasColumnType("bigint");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId", "StartedAt");
+
+                    b.ToTable("StopwatchSessions", (string)null);
                 });
 
             modelBuilder.Entity("STLMS.Domain.Entities.User", b =>
@@ -860,6 +1096,17 @@ namespace STLMS.Infrastructure.Persistence.Migrations.Postgres
                     b.Navigation("Alarm");
                 });
 
+            modelBuilder.Entity("STLMS.Domain.Entities.CountdownTimer", b =>
+                {
+                    b.HasOne("STLMS.Domain.Entities.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("STLMS.Domain.Entities.ExternalLogin", b =>
                 {
                     b.HasOne("STLMS.Domain.Entities.User", "User")
@@ -872,6 +1119,28 @@ namespace STLMS.Infrastructure.Persistence.Migrations.Postgres
                 });
 
             modelBuilder.Entity("STLMS.Domain.Entities.Notification", b =>
+                {
+                    b.HasOne("STLMS.Domain.Entities.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("STLMS.Domain.Entities.PomodoroLog", b =>
+                {
+                    b.HasOne("STLMS.Domain.Entities.PomodoroSession", "PomodoroSession")
+                        .WithMany("Logs")
+                        .HasForeignKey("PomodoroSessionId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("PomodoroSession");
+                });
+
+            modelBuilder.Entity("STLMS.Domain.Entities.PomodoroSession", b =>
                 {
                     b.HasOne("STLMS.Domain.Entities.User", "User")
                         .WithMany()
@@ -910,6 +1179,28 @@ namespace STLMS.Infrastructure.Persistence.Migrations.Postgres
                     b.Navigation("Permission");
 
                     b.Navigation("Role");
+                });
+
+            modelBuilder.Entity("STLMS.Domain.Entities.StopwatchLap", b =>
+                {
+                    b.HasOne("STLMS.Domain.Entities.StopwatchSession", "StopwatchSession")
+                        .WithMany("Laps")
+                        .HasForeignKey("StopwatchSessionId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("StopwatchSession");
+                });
+
+            modelBuilder.Entity("STLMS.Domain.Entities.StopwatchSession", b =>
+                {
+                    b.HasOne("STLMS.Domain.Entities.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("STLMS.Domain.Entities.User", b =>
@@ -981,11 +1272,21 @@ namespace STLMS.Infrastructure.Persistence.Migrations.Postgres
                     b.Navigation("RolePermissions");
                 });
 
+            modelBuilder.Entity("STLMS.Domain.Entities.PomodoroSession", b =>
+                {
+                    b.Navigation("Logs");
+                });
+
             modelBuilder.Entity("STLMS.Domain.Entities.Role", b =>
                 {
                     b.Navigation("RolePermissions");
 
                     b.Navigation("UserRoles");
+                });
+
+            modelBuilder.Entity("STLMS.Domain.Entities.StopwatchSession", b =>
+                {
+                    b.Navigation("Laps");
                 });
 
             modelBuilder.Entity("STLMS.Domain.Entities.User", b =>
