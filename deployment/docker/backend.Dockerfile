@@ -18,12 +18,13 @@ RUN dotnet publish backend/src/STLMS.API/STLMS.API.csproj -c Release -o /app/pub
 # ---------- Stage 2: runtime ----------
 FROM mcr.microsoft.com/dotnet/aspnet:10.0 AS runtime
 WORKDIR /app
-RUN adduser --disabled-password --gecos "" stlms
 
 COPY --from=build /app/publish .
 
-RUN mkdir -p /app/App_Data /app/logs && chown -R stlms:stlms /app
-USER stlms
+# .NET's runtime images already ship a built-in non-root user ($APP_UID) for exactly this purpose -
+# no need to adduser one (that binary isn't even present in this image).
+RUN mkdir -p /app/App_Data /app/logs && chown -R $APP_UID /app
+USER $APP_UID
 
 # Render (and most PaaS hosts) inject PORT at runtime and expect the container to bind to it -
 # ASP.NET Core doesn't read that env var itself, so expand it into --urls via a shell entrypoint.
