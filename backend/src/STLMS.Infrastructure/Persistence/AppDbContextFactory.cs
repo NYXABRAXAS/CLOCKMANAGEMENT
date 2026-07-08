@@ -32,3 +32,17 @@ public class SqlServerAppDbContextFactory : IDesignTimeDbContextFactory<SqlServe
         return new SqlServerAppDbContext(optionsBuilder.Options);
     }
 }
+
+public class PostgresAppDbContextFactory : IDesignTimeDbContextFactory<PostgresAppDbContext>
+{
+    public PostgresAppDbContext CreateDbContext(string[] args)
+    {
+        var optionsBuilder = new DbContextOptionsBuilder<PostgresAppDbContext>();
+        // Design-time only placeholder - real deployments use a real connection string from
+        // config, never this literal value.
+        optionsBuilder.UseNpgsql(
+            "Host=localhost;Port=5432;Database=stlms;Username=postgres;Password=postgres;",
+            npgsql => npgsql.MigrationsAssembly("STLMS.Infrastructure").MigrationsHistoryTable("__EFMigrationsHistory_Postgres"));
+        return new PostgresAppDbContext(optionsBuilder.Options);
+    }
+}

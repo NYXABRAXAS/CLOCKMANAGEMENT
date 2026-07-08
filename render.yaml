@@ -1,9 +1,10 @@
 # Render Blueprint for STLMS.
 #
-# Render has no managed SQL Server offering (Postgres/Redis/etc only), so this deploys against an
-# EXTERNAL SQL Server you provide - e.g. Azure SQL's free tier, or any SQL Server reachable from
-# the internet. Get that connection string BEFORE running this blueprint; you'll be prompted for
-# it (ConnectionStrings__SqlServer, sync: false below).
+# Render has no managed SQL Server offering, so this deploys against an EXTERNAL Postgres database
+# you provide - e.g. a free Supabase project (use the "Session pooler" connection string, not
+# "Direct connection" - the direct route is IPv6-only on Supabase's free tier and Render may not
+# route outbound IPv6). Get that connection string BEFORE running this blueprint; you'll be
+# prompted for it (ConnectionStrings__Postgres, sync: false below).
 #
 # First-deploy URL wiring (same two-phase problem as any blueprint with two dependent services):
 # Vite bakes VITE_API_URL into the frontend bundle at BUILD time, so it can't be known until the
@@ -28,9 +29,9 @@ services:
       - key: ASPNETCORE_ENVIRONMENT
         value: Production
       - key: Database__Provider
-        value: SqlServer
-      - key: ConnectionStrings__SqlServer
-        sync: false # paste your external SQL Server connection string here
+        value: Postgres
+      - key: ConnectionStrings__Postgres
+        sync: false # paste your Supabase (or other Postgres) connection string here
       - key: ConnectionStrings__Redis
         sync: false # optional - leave blank to use the automatic in-memory cache fallback
       - key: Jwt__Secret

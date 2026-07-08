@@ -56,6 +56,14 @@ public static class DependencyInjection
                     sql => sql.MigrationsAssembly("STLMS.Infrastructure").MigrationsHistoryTable("__EFMigrationsHistory_SqlServer")));
             services.AddScoped<AppDbContext>(sp => sp.GetRequiredService<SqlServerAppDbContext>());
         }
+        else if (provider.Equals("Postgres", StringComparison.OrdinalIgnoreCase))
+        {
+            services.AddDbContext<PostgresAppDbContext>(options =>
+                options.UseNpgsql(
+                    configuration.GetConnectionString("Postgres"),
+                    npgsql => npgsql.MigrationsAssembly("STLMS.Infrastructure").MigrationsHistoryTable("__EFMigrationsHistory_Postgres")));
+            services.AddScoped<AppDbContext>(sp => sp.GetRequiredService<PostgresAppDbContext>());
+        }
         else
         {
             services.AddDbContext<SqliteAppDbContext>(options =>
