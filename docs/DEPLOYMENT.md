@@ -26,12 +26,13 @@ the `postgresql://` URL form, which Npgsql also accepts).
    `ConnectionStrings__Postgres` on `stlms-api` to your Supabase (or other Postgres) connection
    string. Leave `WebUrl`/`Cors__AllowedOrigins__0`/SMTP/OAuth blank for now if you don't have
    those values yet.
-4. **First-deploy URL wiring** (needed because Vite bakes `VITE_API_URL` into the frontend bundle
-   at build time - it can't be known before `stlms-api` exists):
+4. **First-deploy URL wiring** (needed because `stlms-web` needs to know `stlms-api`'s URL, which
+   doesn't exist until `stlms-api`'s first deploy finishes). The API URL is read at **container
+   startup**, not baked into the JS bundle at build time, so this only needs a restart:
    - After the first deploy, copy `stlms-api`'s `*.onrender.com` URL.
-   - On `stlms-web`: set the `VITE_API_URL` build arg (in the service's Environment settings, or
-     directly in `render.yaml`) to `https://<stlms-api-url>/api/v1`, then trigger **Manual Deploy**
-     (a full rebuild, not a restart - the value is compiled into the JS bundle).
+   - On `stlms-web`: set the `API_URL` env var to `https://<stlms-api-url>/api/v1`, then trigger a
+     restart (not a full redeploy - nginx re-reads the env var on boot and regenerates the small
+     config file the frontend loads at runtime).
    - Copy `stlms-web`'s URL. On `stlms-api`, set `WebUrl` and `Cors__AllowedOrigins__0` to it, then
      redeploy `stlms-api`.
 5. On boot, the API container automatically runs EF Core migrations against the configured
@@ -62,6 +63,6 @@ isn't what `docker-compose.yml` provisions by default.
 ```bash
 # from the repo root - build context matters, both Dockerfiles expect the monorepo root
 docker build -f deployment/docker/backend.Dockerfile -t stlms-api .
-docker build -f deployment/docker/frontend.Dockerfile -t stlms-web \
-  --build-arg VITE_API_URL=https://api.example.com/api/v1 .
+docker build -f deployment/docker/frontend.Dockerfile -t stlms-web .
+docker run -p 3000:8080 -e API_URL=https://api.example.com/api/v1 stlms-web
 ```

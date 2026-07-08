@@ -1,6 +1,17 @@
 import axios, { AxiosError, type InternalAxiosRequestConfig } from "axios";
 
-const API_BASE = import.meta.env.VITE_API_URL ?? "http://localhost:5080/api/v1";
+declare global {
+  interface Window {
+    __RUNTIME_CONFIG__?: { API_URL?: string };
+  }
+}
+
+// Checked in this order so the same built image can point at different API URLs per environment:
+// a runtime-injected value (nginx writes this from the API_URL env var at container start, see
+// deployment/docker/nginx/generate-runtime-config.sh) takes priority over the Vite build-time
+// value, which takes priority over the local-dev default.
+const API_BASE =
+  window.__RUNTIME_CONFIG__?.API_URL || import.meta.env.VITE_API_URL || "http://localhost:5080/api/v1";
 
 // The csrf_token cookie lives on the API's own origin - if the frontend and API are ever deployed
 // to different sites (e.g. separate subdomains), JS on the frontend's origin can never read a

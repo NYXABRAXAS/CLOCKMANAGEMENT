@@ -6,12 +6,12 @@
 # route outbound IPv6). Get that connection string BEFORE running this blueprint; you'll be
 # prompted for it (ConnectionStrings__Postgres, sync: false below).
 #
-# First-deploy URL wiring (same two-phase problem as any blueprint with two dependent services):
-# Vite bakes VITE_API_URL into the frontend bundle at BUILD time, so it can't be known until the
-# API service already has a URL. After the first deploy:
+# First-deploy URL wiring: stlms-web needs stlms-api's URL, which doesn't exist until stlms-api's
+# first deploy finishes. The API_URL env var below is read at container STARTUP (not baked into
+# the JS bundle at build time), so fixing this up just needs a restart, not a rebuild:
 #   1. Copy stlms-api's *.onrender.com URL.
-#   2. Set it as VITE_API_URL (with /api/v1 appended) on stlms-web, then trigger a manual redeploy
-#      of stlms-web (a full rebuild, not just a restart, since it's baked into the JS bundle).
+#   2. Set it (with /api/v1 appended) as API_URL on stlms-web, then trigger a restart (not a full
+#      redeploy - the existing image already has the code, it just re-reads the env var on boot).
 #   3. Copy stlms-web's URL, set it as WebUrl + Cors__AllowedOrigins__0 on stlms-api, redeploy.
 #
 # Redis is optional - if Connections__Redis is left blank, the API automatically falls back to an
@@ -70,6 +70,7 @@ services:
     runtime: docker
     dockerfilePath: ./deployment/docker/frontend.Dockerfile
     dockerContext: .
-    dockerBuildArgs:
-      VITE_API_URL: https://REPLACE-WITH-STLMS-API-URL.onrender.com/api/v1
+    envVars:
+      - key: API_URL
+        sync: false # set to https://<stlms-api-url>.onrender.com/api/v1 after stlms-api's first deploy
     plan: free
