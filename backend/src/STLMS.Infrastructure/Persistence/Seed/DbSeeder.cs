@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using STLMS.Application.ReligionCalculators;
 using STLMS.Domain.Entities;
 
 namespace STLMS.Infrastructure.Persistence.Seed;
@@ -10,6 +11,7 @@ public static class PermissionModules
     public static readonly string[] All =
     [
         "DASHBOARD", "USERS", "ROLES", "RELIGIONS", "SETTINGS", "AUDIT_LOGS", "PROFILE", "WORLD_CLOCK", "ALARMS", "TIMERS", "CALENDAR", "HEALTH",
+        "PRAYER_CENTER",
     ];
 }
 
@@ -25,6 +27,8 @@ public static class DbSeeder
         await SeedReligionsAsync(context);
         await SeedCitiesAsync(context);
         await SeedAchievementsAsync(context);
+        await SeedFestivalsAsync(context);
+        await SeedQuotesAsync(context);
 
         await context.SaveChangesAsync();
     }
@@ -88,7 +92,7 @@ public static class DbSeeder
         Grant(admin, allPermissions.Where(p => p.Module != "ROLES" || p.Action == "view"));
 
         // Premium/Standard: full self-service access to their own data, no admin modules.
-        var selfServiceModules = new[] { "DASHBOARD", "SETTINGS", "PROFILE", "WORLD_CLOCK", "ALARMS", "TIMERS", "CALENDAR", "HEALTH" };
+        var selfServiceModules = new[] { "DASHBOARD", "SETTINGS", "PROFILE", "WORLD_CLOCK", "ALARMS", "TIMERS", "CALENDAR", "HEALTH", "PRAYER_CENTER" };
         Grant(premium, allPermissions.Where(p => selfServiceModules.Contains(p.Module)));
         Grant(standard, allPermissions.Where(p => selfServiceModules.Contains(p.Module)));
 
@@ -249,6 +253,88 @@ public static class DbSeeder
             new Achievement { Code = AchievementCodes.HabitStreak7, Title = "Week Strong", Description = "Kept a habit streak for 7 days in a row.", Emoji = "🔥", IsSystem = true },
             new Achievement { Code = AchievementCodes.HabitStreak30, Title = "Month Master", Description = "Kept a habit streak for 30 days in a row.", Emoji = "🏆", IsSystem = true },
             new Achievement { Code = AchievementCodes.HabitCheckIns100, Title = "Centurion", Description = "Logged 100 total habit check-ins.", Emoji = "💯", IsSystem = true }
+        );
+        await context.SaveChangesAsync();
+    }
+
+    /// <summary>Christianity's dates are genuinely computed (Easter via the Computus algorithm,
+    /// see ChristianFeastCalculator) - real math, not guesses. Sikhism/Buddhism/Jainism follow
+    /// lunar/lunisolar calendars with no free API or .NET-portable calculator available, so those
+    /// are seeded as reasonable best-effort dates for 2026-2027 - genuinely approximate and in
+    /// need of periodic admin re-verification/re-seeding for future years, exactly as the plan
+    /// for this milestone anticipates (same honesty standard as PanchangCalculator).</summary>
+    private static async Task SeedFestivalsAsync(AppDbContext context)
+    {
+        if (await context.FestivalCalendarEntries.AnyAsync()) return;
+
+        var christianity = await context.Religions.SingleAsync(r => r.Code == ReligionCodes.Christianity);
+        var sikhism = await context.Religions.SingleAsync(r => r.Code == ReligionCodes.Sikhism);
+        var buddhism = await context.Religions.SingleAsync(r => r.Code == ReligionCodes.Buddhism);
+        var jainism = await context.Religions.SingleAsync(r => r.Code == ReligionCodes.Jainism);
+
+        var entries = new List<FestivalCalendarEntry>();
+
+        foreach (var year in new[] { 2026, 2027 })
+        {
+            foreach (var feast in ChristianFeastCalculator.MovableFeastsForYear(year).Concat(ChristianFeastCalculator.FixedFeastsForYear(year)))
+            {
+                entries.Add(new FestivalCalendarEntry { ReligionId = christianity.Id, Name = feast.Name, Date = feast.Date, Emoji = feast.Emoji, IsSystem = true });
+            }
+        }
+
+        FestivalCalendarEntry F(Religion religion, string name, string description, DateOnly date, string emoji) =>
+            new() { ReligionId = religion.Id, Name = name, Description = description, Date = date, Emoji = emoji, IsSystem = true };
+
+        entries.AddRange(
+        [
+            F(sikhism, "Vaisakhi", "Khalsa Foundation Day - fixed solar date on the Nanakshahi calendar.", new DateOnly(2026, 4, 14), "🪈"),
+            F(sikhism, "Vaisakhi", "Khalsa Foundation Day - fixed solar date on the Nanakshahi calendar.", new DateOnly(2027, 4, 14), "🪈"),
+            F(sikhism, "Guru Nanak Gurpurab", "Birth anniversary of Guru Nanak Dev Ji (lunar date - approximate).", new DateOnly(2026, 11, 24), "🙏"),
+            F(sikhism, "Bandi Chhor Divas", "Coincides with Diwali (lunar date - approximate).", new DateOnly(2026, 11, 8), "🪔"),
+
+            F(buddhism, "Magha Puja", "Full moon of the third lunar month (approximate).", new DateOnly(2026, 3, 3), "🪷"),
+            F(buddhism, "Vesak (Buddha Purnima)", "Buddha's birth, enlightenment, and death - full moon of May (approximate).", new DateOnly(2026, 5, 31), "🪷"),
+            F(buddhism, "Asalha Puja (Dharma Day)", "Full moon of the eighth lunar month (approximate).", new DateOnly(2026, 7, 29), "🪷"),
+
+            F(jainism, "Mahavir Jayanti", "Birth anniversary of Lord Mahavira (lunar date - approximate).", new DateOnly(2026, 3, 31), "🕉️"),
+            F(jainism, "Paryushana (start)", "Eight/ten-day period of reflection and fasting (lunar date - approximate).", new DateOnly(2026, 8, 22), "🕉️"),
+            F(jainism, "Diwali (Jain)", "Marks Lord Mahavira's attainment of nirvana - coincides with Diwali (approximate).", new DateOnly(2026, 11, 8), "🪔"),
+        ]);
+
+        context.FestivalCalendarEntries.AddRange(entries);
+        await context.SaveChangesAsync();
+    }
+
+    private static async Task SeedQuotesAsync(AppDbContext context)
+    {
+        if (await context.DailyQuotes.AnyAsync()) return;
+
+        var islam = await context.Religions.SingleAsync(r => r.Code == ReligionCodes.Islam);
+        var hinduism = await context.Religions.SingleAsync(r => r.Code == ReligionCodes.Hinduism);
+        var christianity = await context.Religions.SingleAsync(r => r.Code == ReligionCodes.Christianity);
+        var sikhism = await context.Religions.SingleAsync(r => r.Code == ReligionCodes.Sikhism);
+        var buddhism = await context.Religions.SingleAsync(r => r.Code == ReligionCodes.Buddhism);
+        var jainism = await context.Religions.SingleAsync(r => r.Code == ReligionCodes.Jainism);
+        var judaism = await context.Religions.SingleAsync(r => r.Code == ReligionCodes.Judaism);
+
+        context.DailyQuotes.AddRange(
+            new DailyQuote { ReligionId = null, Text = "The best among you are those who have the best manners and character.", Source = "Universal wisdom" },
+            new DailyQuote { ReligionId = null, Text = "Time is precious - use it wisely, for it never returns.", Source = "Universal wisdom" },
+            new DailyQuote { ReligionId = null, Text = "Small daily habits compound into a life well lived.", Source = "Universal wisdom" },
+            new DailyQuote { ReligionId = islam.Id, Text = "Indeed, with hardship comes ease.", Source = "Qur'an 94:6" },
+            new DailyQuote { ReligionId = islam.Id, Text = "The most beloved deeds to Allah are those done consistently, even if small.", Source = "Hadith, Sahih al-Bukhari" },
+            new DailyQuote { ReligionId = hinduism.Id, Text = "You have the right to work, but never to the fruit of work.", Source = "Bhagavad Gita 2:47" },
+            new DailyQuote { ReligionId = hinduism.Id, Text = "As a man acts, so he becomes.", Source = "Brihadaranyaka Upanishad" },
+            new DailyQuote { ReligionId = christianity.Id, Text = "I can do all things through Christ who strengthens me.", Source = "Philippians 4:13" },
+            new DailyQuote { ReligionId = christianity.Id, Text = "Love your neighbor as yourself.", Source = "Mark 12:31" },
+            new DailyQuote { ReligionId = sikhism.Id, Text = "Recognize the whole human race as one.", Source = "Guru Gobind Singh Ji" },
+            new DailyQuote { ReligionId = sikhism.Id, Text = "Truth is high, but higher still is truthful living.", Source = "Guru Nanak Dev Ji" },
+            new DailyQuote { ReligionId = buddhism.Id, Text = "Peace comes from within. Do not seek it without.", Source = "The Buddha" },
+            new DailyQuote { ReligionId = buddhism.Id, Text = "What we think, we become.", Source = "The Dhammapada" },
+            new DailyQuote { ReligionId = jainism.Id, Text = "Non-violence is the highest religion.", Source = "Ahimsa Paramo Dharma" },
+            new DailyQuote { ReligionId = jainism.Id, Text = "Live and let live.", Source = "Jain principle" },
+            new DailyQuote { ReligionId = judaism.Id, Text = "Whoever saves a single life is considered to have saved an entire world.", Source = "Mishnah, Sanhedrin 4:5" },
+            new DailyQuote { ReligionId = judaism.Id, Text = "You are not obligated to complete the work, but neither are you free to abandon it.", Source = "Pirkei Avot 2:16" }
         );
         await context.SaveChangesAsync();
     }

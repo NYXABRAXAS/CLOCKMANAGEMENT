@@ -8,4 +8,5 @@ public record UpdateSettingsRequest(
     string Theme,
     string? ReligionCode,
     double? PrayerLatitude,
-    double? PrayerLongitude);
+    double? PrayerLongitude,
+    int? PrayerCalculationMethod);

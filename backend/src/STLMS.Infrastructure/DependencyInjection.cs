@@ -10,6 +10,7 @@ using STLMS.Infrastructure.BackgroundServices;
 using STLMS.Infrastructure.Caching;
 using STLMS.Infrastructure.ExternalServices.Auth;
 using STLMS.Infrastructure.ExternalServices.Email;
+using STLMS.Infrastructure.ExternalServices.Religion;
 using STLMS.Infrastructure.Identity;
 using STLMS.Infrastructure.Persistence;
 using STLMS.Infrastructure.Persistence.Repositories;
@@ -39,6 +40,17 @@ public static class DependencyInjection
         services.AddScoped<IFileStorageService, LocalFileStorageService>();
         services.AddScoped<INotificationDispatcher, NotificationDispatcher>();
         services.AddHostedService<AlarmTriggerService>();
+
+        services.AddHttpClient<IPrayerTimeProvider, AladhanPrayerTimeProvider>(client =>
+        {
+            client.BaseAddress = new Uri("https://api.aladhan.com/");
+            client.Timeout = TimeSpan.FromSeconds(10);
+        });
+        services.AddHttpClient<IHebrewCalendarProvider, HebcalProvider>(client =>
+        {
+            client.BaseAddress = new Uri("https://www.hebcal.com/");
+            client.Timeout = TimeSpan.FromSeconds(10);
+        });
 
         return services;
     }

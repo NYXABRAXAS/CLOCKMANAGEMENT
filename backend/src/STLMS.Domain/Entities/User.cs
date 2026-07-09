@@ -22,6 +22,7 @@ public class User : AuditableEntity
     public Religion? Religion { get; set; }
     public double? PrayerLatitude { get; set; }
     public double? PrayerLongitude { get; set; }
+    public int? PrayerCalculationMethod { get; set; } // Aladhan API method id, e.g. 2 = ISNA, 3 = MWL, 4 = Umm al-Qura
 
     public SubscriptionStatus SubscriptionStatus { get; set; } = SubscriptionStatus.Free;
     public DateTime? SubscriptionExpiresAt { get; set; }

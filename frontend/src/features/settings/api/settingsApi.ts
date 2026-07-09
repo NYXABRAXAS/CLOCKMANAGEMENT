@@ -10,6 +10,7 @@ export interface UpdateSettingsPayload {
   religionCode: string | null;
   prayerLatitude: number | null;
   prayerLongitude: number | null;
+  prayerCalculationMethod: number | null;
 }
 
 export const settingsApi = {

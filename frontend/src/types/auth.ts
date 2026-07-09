@@ -11,6 +11,9 @@ export interface UserProfile {
   timeFormat: string;
   language: string;
   theme: "light" | "dark" | "system";
+  prayerLatitude: number | null;
+  prayerLongitude: number | null;
+  prayerCalculationMethod: number | null;
   subscriptionStatus: string;
   twoFactorEnabled: boolean;
   roles: string[];

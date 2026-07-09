@@ -420,6 +420,49 @@ namespace STLMS.Infrastructure.Persistence.Migrations.SqlServer
                     b.ToTable("CountdownTimers", (string)null);
                 });
 
+            modelBuilder.Entity("STLMS.Domain.Entities.DailyQuote", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid?>("CreatedById")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime?>("ModifiedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid?>("ModifiedById")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid?>("ReligionId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Source")
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<string>("Text")
+                        .IsRequired()
+                        .HasMaxLength(1000)
+                        .HasColumnType("nvarchar(1000)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ReligionId");
+
+                    b.ToTable("DailyQuotes", (string)null);
+                });
+
             modelBuilder.Entity("STLMS.Domain.Entities.EventCountdown", b =>
                 {
                     b.Property<Guid>("Id")
@@ -512,6 +555,59 @@ namespace STLMS.Infrastructure.Persistence.Migrations.SqlServer
                         .IsUnique();
 
                     b.ToTable("ExternalLogins", (string)null);
+                });
+
+            modelBuilder.Entity("STLMS.Domain.Entities.FestivalCalendarEntry", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid?>("CreatedById")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateOnly>("Date")
+                        .HasColumnType("date");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(1000)
+                        .HasColumnType("nvarchar(1000)");
+
+                    b.Property<string>("Emoji")
+                        .HasMaxLength(10)
+                        .HasColumnType("nvarchar(10)");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsSystem")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime?>("ModifiedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid?>("ModifiedById")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<Guid>("ReligionId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ReligionId", "Date");
+
+                    b.ToTable("FestivalCalendarEntries", (string)null);
                 });
 
             modelBuilder.Entity("STLMS.Domain.Entities.Habit", b =>
@@ -1378,6 +1474,9 @@ namespace STLMS.Infrastructure.Persistence.Migrations.SqlServer
                     b.Property<string>("PhotoUrl")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int?>("PrayerCalculationMethod")
+                        .HasColumnType("int");
+
                     b.Property<double?>("PrayerLatitude")
                         .HasColumnType("float");
 
@@ -1463,6 +1562,52 @@ namespace STLMS.Infrastructure.Persistence.Migrations.SqlServer
                         .IsUnique();
 
                     b.ToTable("UserAchievements", (string)null);
+                });
+
+            modelBuilder.Entity("STLMS.Domain.Entities.UserPrayerLog", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<bool>("Completed")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid?>("CreatedById")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateOnly>("Date")
+                        .HasColumnType("date");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime?>("ModifiedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid?>("ModifiedById")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("PrayerName")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId", "Date", "PrayerName")
+                        .IsUnique();
+
+                    b.ToTable("UserPrayerLogs", (string)null);
                 });
 
             modelBuilder.Entity("STLMS.Domain.Entities.UserRole", b =>
@@ -1647,6 +1792,16 @@ namespace STLMS.Infrastructure.Persistence.Migrations.SqlServer
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("STLMS.Domain.Entities.DailyQuote", b =>
+                {
+                    b.HasOne("STLMS.Domain.Entities.Religion", "Religion")
+                        .WithMany()
+                        .HasForeignKey("ReligionId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.Navigation("Religion");
+                });
+
             modelBuilder.Entity("STLMS.Domain.Entities.EventCountdown", b =>
                 {
                     b.HasOne("STLMS.Domain.Entities.User", "User")
@@ -1667,6 +1822,17 @@ namespace STLMS.Infrastructure.Persistence.Migrations.SqlServer
                         .IsRequired();
 
                     b.Navigation("User");
+                });
+
+            modelBuilder.Entity("STLMS.Domain.Entities.FestivalCalendarEntry", b =>
+                {
+                    b.HasOne("STLMS.Domain.Entities.Religion", "Religion")
+                        .WithMany()
+                        .HasForeignKey("ReligionId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Religion");
                 });
 
             modelBuilder.Entity("STLMS.Domain.Entities.Habit", b =>
@@ -1845,6 +2011,17 @@ namespace STLMS.Infrastructure.Persistence.Migrations.SqlServer
                         .IsRequired();
 
                     b.Navigation("Achievement");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("STLMS.Domain.Entities.UserPrayerLog", b =>
+                {
+                    b.HasOne("STLMS.Domain.Entities.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("User");
                 });

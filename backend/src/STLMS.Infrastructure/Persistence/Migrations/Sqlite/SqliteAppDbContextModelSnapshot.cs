@@ -415,6 +415,49 @@ namespace STLMS.Infrastructure.Persistence.Migrations.Sqlite
                     b.ToTable("CountdownTimers", (string)null);
                 });
 
+            modelBuilder.Entity("STLMS.Domain.Entities.DailyQuote", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<Guid?>("CreatedById")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<DateTime?>("ModifiedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<Guid?>("ModifiedById")
+                        .HasColumnType("TEXT");
+
+                    b.Property<Guid?>("ReligionId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Source")
+                        .HasMaxLength(200)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Text")
+                        .IsRequired()
+                        .HasMaxLength(1000)
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ReligionId");
+
+                    b.ToTable("DailyQuotes", (string)null);
+                });
+
             modelBuilder.Entity("STLMS.Domain.Entities.EventCountdown", b =>
                 {
                     b.Property<Guid>("Id")
@@ -507,6 +550,59 @@ namespace STLMS.Infrastructure.Persistence.Migrations.Sqlite
                         .IsUnique();
 
                     b.ToTable("ExternalLogins", (string)null);
+                });
+
+            modelBuilder.Entity("STLMS.Domain.Entities.FestivalCalendarEntry", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<Guid?>("CreatedById")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateOnly>("Date")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(1000)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Emoji")
+                        .HasMaxLength(10)
+                        .HasColumnType("TEXT");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<bool>("IsSystem")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<DateTime?>("ModifiedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<Guid?>("ModifiedById")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("TEXT");
+
+                    b.Property<Guid>("ReligionId")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ReligionId", "Date");
+
+                    b.ToTable("FestivalCalendarEntries", (string)null);
                 });
 
             modelBuilder.Entity("STLMS.Domain.Entities.Habit", b =>
@@ -1373,6 +1469,9 @@ namespace STLMS.Infrastructure.Persistence.Migrations.Sqlite
                     b.Property<string>("PhotoUrl")
                         .HasColumnType("TEXT");
 
+                    b.Property<int?>("PrayerCalculationMethod")
+                        .HasColumnType("INTEGER");
+
                     b.Property<double?>("PrayerLatitude")
                         .HasColumnType("REAL");
 
@@ -1458,6 +1557,52 @@ namespace STLMS.Infrastructure.Persistence.Migrations.Sqlite
                         .IsUnique();
 
                     b.ToTable("UserAchievements", (string)null);
+                });
+
+            modelBuilder.Entity("STLMS.Domain.Entities.UserPrayerLog", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("TEXT");
+
+                    b.Property<bool>("Completed")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<Guid?>("CreatedById")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateOnly>("Date")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<DateTime?>("ModifiedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<Guid?>("ModifiedById")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("PrayerName")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("TEXT");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId", "Date", "PrayerName")
+                        .IsUnique();
+
+                    b.ToTable("UserPrayerLogs", (string)null);
                 });
 
             modelBuilder.Entity("STLMS.Domain.Entities.UserRole", b =>
@@ -1642,6 +1787,16 @@ namespace STLMS.Infrastructure.Persistence.Migrations.Sqlite
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("STLMS.Domain.Entities.DailyQuote", b =>
+                {
+                    b.HasOne("STLMS.Domain.Entities.Religion", "Religion")
+                        .WithMany()
+                        .HasForeignKey("ReligionId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.Navigation("Religion");
+                });
+
             modelBuilder.Entity("STLMS.Domain.Entities.EventCountdown", b =>
                 {
                     b.HasOne("STLMS.Domain.Entities.User", "User")
@@ -1662,6 +1817,17 @@ namespace STLMS.Infrastructure.Persistence.Migrations.Sqlite
                         .IsRequired();
 
                     b.Navigation("User");
+                });
+
+            modelBuilder.Entity("STLMS.Domain.Entities.FestivalCalendarEntry", b =>
+                {
+                    b.HasOne("STLMS.Domain.Entities.Religion", "Religion")
+                        .WithMany()
+                        .HasForeignKey("ReligionId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Religion");
                 });
 
             modelBuilder.Entity("STLMS.Domain.Entities.Habit", b =>
@@ -1840,6 +2006,17 @@ namespace STLMS.Infrastructure.Persistence.Migrations.Sqlite
                         .IsRequired();
 
                     b.Navigation("Achievement");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("STLMS.Domain.Entities.UserPrayerLog", b =>
+                {
+                    b.HasOne("STLMS.Domain.Entities.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("User");
                 });

@@ -27,7 +27,8 @@ public class SettingsController(IAppMediator mediator, ICurrentUserService curre
                 request.Theme,
                 request.ReligionCode,
                 request.PrayerLatitude,
-                request.PrayerLongitude),
+                request.PrayerLongitude,
+                request.PrayerCalculationMethod),
             ct);
         return Ok(profile);
     }

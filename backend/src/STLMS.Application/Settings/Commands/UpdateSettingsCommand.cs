@@ -18,7 +18,8 @@ public record UpdateSettingsCommand(
     string Theme,
     string? ReligionCode,
     double? PrayerLatitude,
-    double? PrayerLongitude) : IRequest<UserProfileDto>;
+    double? PrayerLongitude,
+    int? PrayerCalculationMethod) : IRequest<UserProfileDto>;
 
 public class UpdateSettingsCommandValidator : AbstractValidator<UpdateSettingsCommand>
 {
@@ -63,6 +64,7 @@ public class UpdateSettingsCommandHandler(IUnitOfWork uow) : IRequestHandler<Upd
         user.Theme = request.Theme;
         user.PrayerLatitude = request.PrayerLatitude;
         user.PrayerLongitude = request.PrayerLongitude;
+        user.PrayerCalculationMethod = request.PrayerCalculationMethod;
 
         uow.Repository<User>().Update(user);
         await uow.SaveChangesAsync(ct);

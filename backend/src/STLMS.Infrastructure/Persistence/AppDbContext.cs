@@ -47,6 +47,9 @@ public class AppDbContext(DbContextOptions options) : DbContext(options)
     public DbSet<SleepLog> SleepLogs => Set<SleepLog>();
     public DbSet<Achievement> Achievements => Set<Achievement>();
     public DbSet<UserAchievement> UserAchievements => Set<UserAchievement>();
+    public DbSet<FestivalCalendarEntry> FestivalCalendarEntries => Set<FestivalCalendarEntry>();
+    public DbSet<DailyQuote> DailyQuotes => Set<DailyQuote>();
+    public DbSet<UserPrayerLog> UserPrayerLogs => Set<UserPrayerLog>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

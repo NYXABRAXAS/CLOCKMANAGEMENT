@@ -4,11 +4,12 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useTheme } from "next-themes";
 import { toast } from "sonner";
-import { Loader2 } from "lucide-react";
+import { Loader2, LocateFixed } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useAppDispatch, useAppSelector } from "@/app/hooks";
@@ -25,6 +26,9 @@ const schema = z.object({
   language: z.string().min(1, "Required"),
   countryCode: z.string().nullable(),
   religionCode: z.string().nullable(),
+  prayerLatitude: z.number().nullable(),
+  prayerLongitude: z.number().nullable(),
+  prayerCalculationMethod: z.number().nullable(),
 });
 type FormValues = z.infer<typeof schema>;
 
@@ -39,7 +43,7 @@ export default function SettingsPage() {
 
   const { data: religions } = useQuery({ queryKey: ["religions"], queryFn: religionsApi.getReligions });
 
-  const { control, handleSubmit, watch } = useForm<FormValues>({
+  const { control, handleSubmit, watch, setValue } = useForm<FormValues>({
     resolver: zodResolver(schema),
     defaultValues: {
       theme: user?.theme ?? "system",
@@ -48,8 +52,28 @@ export default function SettingsPage() {
       language: user?.language ?? "en",
       countryCode: user?.countryCode ?? null,
       religionCode: user?.religionCode ?? null,
+      prayerLatitude: user?.prayerLatitude ?? null,
+      prayerLongitude: user?.prayerLongitude ?? null,
+      prayerCalculationMethod: user?.prayerCalculationMethod ?? 2,
     },
   });
+
+  const watchedReligion = watch("religionCode");
+
+  const onUseCurrentLocation = () => {
+    if (!navigator.geolocation) {
+      toast.error("Geolocation isn't available in this browser.");
+      return;
+    }
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        setValue("prayerLatitude", Math.round(position.coords.latitude * 10000) / 10000);
+        setValue("prayerLongitude", Math.round(position.coords.longitude * 10000) / 10000);
+        toast.success("Location captured.");
+      },
+      () => toast.error("Couldn't get your location - check your browser's location permission."),
+    );
+  };
 
   const watchedTheme = watch("theme");
   React.useEffect(() => {
@@ -66,8 +90,9 @@ export default function SettingsPage() {
         language: values.language,
         theme: values.theme,
         religionCode: values.religionCode,
-        prayerLatitude: null,
-        prayerLongitude: null,
+        prayerLatitude: values.prayerLatitude,
+        prayerLongitude: values.prayerLongitude,
+        prayerCalculationMethod: values.prayerCalculationMethod,
       });
       dispatch(userUpdated(profile));
       toast.success("Settings saved.");
@@ -249,6 +274,76 @@ export default function SettingsPage() {
                 </div>
               </CardContent>
             </Card>
+
+            {watchedReligion === "ISLAM" && (
+              <Card className="mt-4">
+                <CardHeader>
+                  <CardTitle>Prayer location</CardTitle>
+                  <CardDescription>Used to calculate your daily prayer times and Qibla direction.</CardDescription>
+                </CardHeader>
+                <CardContent className="flex flex-col gap-4">
+                  <Button type="button" variant="outline" className="w-fit" onClick={onUseCurrentLocation}>
+                    <LocateFixed /> Use my current location
+                  </Button>
+                  <div className="grid gap-4 sm:grid-cols-2">
+                    <div className="flex flex-col gap-1.5">
+                      <Label>Latitude</Label>
+                      <Controller
+                        control={control}
+                        name="prayerLatitude"
+                        render={({ field }) => (
+                          <Input
+                            type="number"
+                            step="any"
+                            value={field.value ?? ""}
+                            onChange={(e) => field.onChange(e.target.value === "" ? null : Number(e.target.value))}
+                          />
+                        )}
+                      />
+                    </div>
+                    <div className="flex flex-col gap-1.5">
+                      <Label>Longitude</Label>
+                      <Controller
+                        control={control}
+                        name="prayerLongitude"
+                        render={({ field }) => (
+                          <Input
+                            type="number"
+                            step="any"
+                            value={field.value ?? ""}
+                            onChange={(e) => field.onChange(e.target.value === "" ? null : Number(e.target.value))}
+                          />
+                        )}
+                      />
+                    </div>
+                  </div>
+                  <div className="flex flex-col gap-1.5 sm:max-w-xs">
+                    <Label>Calculation method</Label>
+                    <Controller
+                      control={control}
+                      name="prayerCalculationMethod"
+                      render={({ field }) => (
+                        <Select value={String(field.value ?? 2)} onValueChange={(v) => field.onChange(Number(v))}>
+                          <SelectTrigger>
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="2">Islamic Society of North America (ISNA)</SelectItem>
+                            <SelectItem value="3">Muslim World League (MWL)</SelectItem>
+                            <SelectItem value="4">Umm al-Qura, Makkah</SelectItem>
+                            <SelectItem value="5">Egyptian General Authority</SelectItem>
+                            <SelectItem value="1">University of Islamic Sciences, Karachi</SelectItem>
+                            <SelectItem value="8">Gulf Region</SelectItem>
+                            <SelectItem value="11">Singapore</SelectItem>
+                            <SelectItem value="13">Diyanet, Turkey</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      )}
+                    />
+                  </div>
+                </CardContent>
+              </Card>
+            )}
           </TabsContent>
         </Tabs>
 
