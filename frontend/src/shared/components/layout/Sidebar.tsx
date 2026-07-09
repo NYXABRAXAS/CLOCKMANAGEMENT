@@ -1,9 +1,13 @@
 import { Clock } from "lucide-react";
 import { NavLink } from "react-router";
 import { cn } from "@/lib/utils";
+import { useAppSelector } from "@/app/hooks";
 import { navItems } from "./navItems";
 
 function SidebarContent() {
+  const permissions = useAppSelector((s) => s.auth.user?.permissions) ?? [];
+  const visibleItems = navItems.filter((item) => !item.anyOfPermissions || item.anyOfPermissions.some((p) => permissions.includes(p)));
+
   return (
     <>
       <div className="flex h-14 items-center gap-2 border-b px-4">
@@ -13,7 +17,7 @@ function SidebarContent() {
         <span className="font-semibold">STLMS</span>
       </div>
       <nav className="flex flex-1 flex-col gap-1 p-3">
-        {navItems.map(({ to, label, icon: Icon }) => (
+        {visibleItems.map(({ to, label, icon: Icon }) => (
           <NavLink
             key={to}
             to={to}

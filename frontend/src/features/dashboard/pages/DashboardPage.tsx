@@ -129,16 +129,18 @@ export default function DashboardPage() {
                 <Settings /> Preferences
               </Link>
             </Button>
+            {(user.permissions.includes("USERS:view") ||
+              user.permissions.includes("ROLES:view") ||
+              user.permissions.includes("AUDIT_LOGS:view")) && (
+              <Button variant="outline" className="justify-start" asChild>
+                <Link to="/admin">
+                  <ShieldCheck /> Admin Panel
+                </Link>
+              </Button>
+            )}
           </CardContent>
         </Card>
       </div>
-
-      <Card>
-        <CardHeader>
-          <CardTitle>More on the way</CardTitle>
-          <CardDescription>An admin panel for managing users, roles, and content lands here once that module is built.</CardDescription>
-        </CardHeader>
-      </Card>
     </div>
   );
 }

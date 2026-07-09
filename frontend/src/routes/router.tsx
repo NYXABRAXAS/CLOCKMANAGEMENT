@@ -1,5 +1,6 @@
 import { createBrowserRouter, Navigate } from "react-router";
 import { ProtectedRoute, GuestOnlyRoute } from "./ProtectedRoute";
+import { RequirePermission } from "./RequirePermission";
 import { AppShell } from "@/shared/components/layout/AppShell";
 import LoginPage from "@/features/auth/pages/LoginPage";
 import RegisterPage from "@/features/auth/pages/RegisterPage";
@@ -21,6 +22,7 @@ import HabitsPage from "@/features/health/pages/HabitsPage";
 import SleepPage from "@/features/health/pages/SleepPage";
 import ReligionCenterPage from "@/features/religionCenter/pages/ReligionCenterPage";
 import ProductivityPage from "@/features/productivity/pages/ProductivityPage";
+import AdminPage from "@/features/admin/pages/AdminPage";
 
 export const router = createBrowserRouter([
   {
@@ -54,6 +56,10 @@ export const router = createBrowserRouter([
           { path: "/productivity", element: <ProductivityPage /> },
           { path: "/settings", element: <SettingsPage /> },
           { path: "/profile", element: <ProfilePage /> },
+          {
+            element: <RequirePermission anyOf={["USERS:view", "ROLES:view", "AUDIT_LOGS:view", "RELIGIONS:create"]} />,
+            children: [{ path: "/admin", element: <AdminPage /> }],
+          },
         ],
       },
     ],

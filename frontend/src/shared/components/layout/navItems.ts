@@ -11,6 +11,7 @@ import {
   Pill,
   Repeat,
   Settings,
+  ShieldCheck,
   Sparkles,
   Timer,
   User,
@@ -20,6 +21,9 @@ export interface NavItem {
   to: string;
   label: string;
   icon: typeof LayoutDashboard;
+  /** Only shown if the current user has at least one of these permissions. Omit for items every
+   * authenticated user should see. */
+  anyOfPermissions?: string[];
 }
 
 // Each future milestone adds its own route here once it actually exists - no placeholder links
@@ -40,4 +44,10 @@ export const navItems: NavItem[] = [
   { to: "/productivity", label: "Productivity", icon: BarChart3 },
   { to: "/settings", label: "Settings", icon: Settings },
   { to: "/profile", label: "Profile", icon: User },
+  {
+    to: "/admin",
+    label: "Admin Panel",
+    icon: ShieldCheck,
+    anyOfPermissions: ["USERS:view", "ROLES:view", "AUDIT_LOGS:view", "RELIGIONS:create"],
+  },
 ];
