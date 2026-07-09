@@ -14,6 +14,10 @@ export interface UserProfile {
   prayerLatitude: number | null;
   prayerLongitude: number | null;
   prayerCalculationMethod: number | null;
+  weatherLatitude: number | null;
+  weatherLongitude: number | null;
+  emailNotificationsEnabled: boolean;
+  pushNotificationsEnabled: boolean;
   subscriptionStatus: string;
   twoFactorEnabled: boolean;
   roles: string[];

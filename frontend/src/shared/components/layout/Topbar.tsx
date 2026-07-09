@@ -13,6 +13,7 @@ import {
 import { useAppDispatch, useAppSelector } from "@/app/hooks";
 import { sidebarToggled } from "@/app/uiSlice";
 import { logout } from "@/features/auth/authSlice";
+import { NotificationBell } from "@/features/notifications/components/NotificationBell";
 
 function initials(firstName: string, lastName: string) {
   return `${firstName.charAt(0)}${lastName.charAt(0)}`.toUpperCase();
@@ -38,6 +39,8 @@ export function Topbar() {
       </Button>
 
       <div className="flex-1" />
+
+      <NotificationBell />
 
       <DropdownMenu>
         <DropdownMenuTrigger asChild>

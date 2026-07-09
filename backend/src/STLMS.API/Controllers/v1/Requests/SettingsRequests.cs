@@ -9,4 +9,8 @@ public record UpdateSettingsRequest(
     string? ReligionCode,
     double? PrayerLatitude,
     double? PrayerLongitude,
-    int? PrayerCalculationMethod);
+    int? PrayerCalculationMethod,
+    double? WeatherLatitude,
+    double? WeatherLongitude,
+    bool EmailNotificationsEnabled,
+    bool PushNotificationsEnabled);

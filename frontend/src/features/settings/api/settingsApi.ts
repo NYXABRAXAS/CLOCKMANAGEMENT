@@ -11,6 +11,10 @@ export interface UpdateSettingsPayload {
   prayerLatitude: number | null;
   prayerLongitude: number | null;
   prayerCalculationMethod: number | null;
+  weatherLatitude: number | null;
+  weatherLongitude: number | null;
+  emailNotificationsEnabled: boolean;
+  pushNotificationsEnabled: boolean;
 }
 
 export const settingsApi = {

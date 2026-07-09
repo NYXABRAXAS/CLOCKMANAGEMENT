@@ -820,6 +820,56 @@ namespace STLMS.Infrastructure.Persistence.Migrations.Postgres
                     b.ToTable("MedicineLogs", (string)null);
                 });
 
+            modelBuilder.Entity("STLMS.Domain.Entities.MedicineReminderLog", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid?>("CreatedById")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateOnly>("Date")
+                        .HasColumnType("date");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("Hour")
+                        .HasColumnType("integer");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean");
+
+                    b.Property<Guid>("MedicineId")
+                        .HasColumnType("uuid");
+
+                    b.Property<int>("Minute")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime?>("ModifiedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid?>("ModifiedById")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("SentAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("MedicineId", "Date", "Hour", "Minute")
+                        .IsUnique();
+
+                    b.ToTable("MedicineReminderLogs", (string)null);
+                });
+
             modelBuilder.Entity("STLMS.Domain.Entities.MedicineTime", b =>
                 {
                     b.Property<Guid>("Id")
@@ -1418,6 +1468,9 @@ namespace STLMS.Infrastructure.Persistence.Migrations.Postgres
                         .HasMaxLength(256)
                         .HasColumnType("character varying(256)");
 
+                    b.Property<bool>("EmailNotificationsEnabled")
+                        .HasColumnType("boolean");
+
                     b.Property<DateTime?>("EmailVerificationExpiresAt")
                         .HasColumnType("timestamp with time zone");
 
@@ -1483,6 +1536,9 @@ namespace STLMS.Infrastructure.Persistence.Migrations.Postgres
                     b.Property<double?>("PrayerLongitude")
                         .HasColumnType("double precision");
 
+                    b.Property<bool>("PushNotificationsEnabled")
+                        .HasColumnType("boolean");
+
                     b.Property<Guid?>("ReligionId")
                         .HasColumnType("uuid");
 
@@ -1510,6 +1566,12 @@ namespace STLMS.Infrastructure.Persistence.Migrations.Postgres
 
                     b.Property<bool>("TwoFactorEnabled")
                         .HasColumnType("boolean");
+
+                    b.Property<double?>("WeatherLatitude")
+                        .HasColumnType("double precision");
+
+                    b.Property<double?>("WeatherLongitude")
+                        .HasColumnType("double precision");
 
                     b.HasKey("Id");
 
@@ -1562,6 +1624,50 @@ namespace STLMS.Infrastructure.Persistence.Migrations.Postgres
                         .IsUnique();
 
                     b.ToTable("UserAchievements", (string)null);
+                });
+
+            modelBuilder.Entity("STLMS.Domain.Entities.UserDevice", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid?>("CreatedById")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("FcmToken")
+                        .IsRequired()
+                        .HasMaxLength(4096)
+                        .HasColumnType("character varying(4096)");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean");
+
+                    b.Property<DateTime?>("ModifiedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid?>("ModifiedById")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Platform")
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId", "FcmToken")
+                        .IsUnique();
+
+                    b.ToTable("UserDevices", (string)null);
                 });
 
             modelBuilder.Entity("STLMS.Domain.Entities.UserPrayerLog", b =>
@@ -1879,6 +1985,17 @@ namespace STLMS.Infrastructure.Persistence.Migrations.Postgres
                     b.Navigation("Medicine");
                 });
 
+            modelBuilder.Entity("STLMS.Domain.Entities.MedicineReminderLog", b =>
+                {
+                    b.HasOne("STLMS.Domain.Entities.Medicine", "Medicine")
+                        .WithMany()
+                        .HasForeignKey("MedicineId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Medicine");
+                });
+
             modelBuilder.Entity("STLMS.Domain.Entities.MedicineTime", b =>
                 {
                     b.HasOne("STLMS.Domain.Entities.Medicine", "Medicine")
@@ -2011,6 +2128,17 @@ namespace STLMS.Infrastructure.Persistence.Migrations.Postgres
                         .IsRequired();
 
                     b.Navigation("Achievement");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("STLMS.Domain.Entities.UserDevice", b =>
+                {
+                    b.HasOne("STLMS.Domain.Entities.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("User");
                 });

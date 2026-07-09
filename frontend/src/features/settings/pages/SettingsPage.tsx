@@ -11,6 +11,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Switch } from "@/components/ui/switch";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useAppDispatch, useAppSelector } from "@/app/hooks";
 import { userUpdated } from "@/features/auth/authSlice";
@@ -29,6 +30,10 @@ const schema = z.object({
   prayerLatitude: z.number().nullable(),
   prayerLongitude: z.number().nullable(),
   prayerCalculationMethod: z.number().nullable(),
+  weatherLatitude: z.number().nullable(),
+  weatherLongitude: z.number().nullable(),
+  emailNotificationsEnabled: z.boolean(),
+  pushNotificationsEnabled: z.boolean(),
 });
 type FormValues = z.infer<typeof schema>;
 
@@ -55,20 +60,31 @@ export default function SettingsPage() {
       prayerLatitude: user?.prayerLatitude ?? null,
       prayerLongitude: user?.prayerLongitude ?? null,
       prayerCalculationMethod: user?.prayerCalculationMethod ?? 2,
+      weatherLatitude: user?.weatherLatitude ?? null,
+      weatherLongitude: user?.weatherLongitude ?? null,
+      emailNotificationsEnabled: user?.emailNotificationsEnabled ?? true,
+      pushNotificationsEnabled: user?.pushNotificationsEnabled ?? true,
     },
   });
 
   const watchedReligion = watch("religionCode");
 
-  const onUseCurrentLocation = () => {
+  const onUseCurrentLocation = (target: "prayer" | "weather") => {
     if (!navigator.geolocation) {
       toast.error("Geolocation isn't available in this browser.");
       return;
     }
     navigator.geolocation.getCurrentPosition(
       (position) => {
-        setValue("prayerLatitude", Math.round(position.coords.latitude * 10000) / 10000);
-        setValue("prayerLongitude", Math.round(position.coords.longitude * 10000) / 10000);
+        const lat = Math.round(position.coords.latitude * 10000) / 10000;
+        const lon = Math.round(position.coords.longitude * 10000) / 10000;
+        if (target === "prayer") {
+          setValue("prayerLatitude", lat);
+          setValue("prayerLongitude", lon);
+        } else {
+          setValue("weatherLatitude", lat);
+          setValue("weatherLongitude", lon);
+        }
         toast.success("Location captured.");
       },
       () => toast.error("Couldn't get your location - check your browser's location permission."),
@@ -93,6 +109,10 @@ export default function SettingsPage() {
         prayerLatitude: values.prayerLatitude,
         prayerLongitude: values.prayerLongitude,
         prayerCalculationMethod: values.prayerCalculationMethod,
+        weatherLatitude: values.weatherLatitude,
+        weatherLongitude: values.weatherLongitude,
+        emailNotificationsEnabled: values.emailNotificationsEnabled,
+        pushNotificationsEnabled: values.pushNotificationsEnabled,
       });
       dispatch(userUpdated(profile));
       toast.success("Settings saved.");
@@ -116,6 +136,7 @@ export default function SettingsPage() {
             <TabsTrigger value="appearance">Appearance</TabsTrigger>
             <TabsTrigger value="regional">Regional</TabsTrigger>
             <TabsTrigger value="religion">Religion</TabsTrigger>
+            <TabsTrigger value="notifications">Notifications</TabsTrigger>
           </TabsList>
 
           <TabsContent value="appearance" className="mt-4">
@@ -282,7 +303,7 @@ export default function SettingsPage() {
                   <CardDescription>Used to calculate your daily prayer times and Qibla direction.</CardDescription>
                 </CardHeader>
                 <CardContent className="flex flex-col gap-4">
-                  <Button type="button" variant="outline" className="w-fit" onClick={onUseCurrentLocation}>
+                  <Button type="button" variant="outline" className="w-fit" onClick={() => onUseCurrentLocation("prayer")}>
                     <LocateFixed /> Use my current location
                   </Button>
                   <div className="grid gap-4 sm:grid-cols-2">
@@ -344,6 +365,83 @@ export default function SettingsPage() {
                 </CardContent>
               </Card>
             )}
+          </TabsContent>
+
+          <TabsContent value="notifications" className="mt-4 flex flex-col gap-4">
+            <Card>
+              <CardHeader>
+                <CardTitle>Notification preferences</CardTitle>
+                <CardDescription>Choose how STLMS reaches you when something needs your attention.</CardDescription>
+              </CardHeader>
+              <CardContent className="flex flex-col gap-4">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <Label>Email notifications</Label>
+                    <p className="text-xs text-muted-foreground">Send an email for alarms, reminders, and other alerts.</p>
+                  </div>
+                  <Controller
+                    control={control}
+                    name="emailNotificationsEnabled"
+                    render={({ field }) => <Switch checked={field.value} onCheckedChange={field.onChange} />}
+                  />
+                </div>
+                <div className="flex items-center justify-between">
+                  <div>
+                    <Label>Push notifications</Label>
+                    <p className="text-xs text-muted-foreground">Send a push notification to your registered devices.</p>
+                  </div>
+                  <Controller
+                    control={control}
+                    name="pushNotificationsEnabled"
+                    render={({ field }) => <Switch checked={field.value} onCheckedChange={field.onChange} />}
+                  />
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader>
+                <CardTitle>Weather location</CardTitle>
+                <CardDescription>Used for the current-conditions widget on your Dashboard.</CardDescription>
+              </CardHeader>
+              <CardContent className="flex flex-col gap-4">
+                <Button type="button" variant="outline" className="w-fit" onClick={() => onUseCurrentLocation("weather")}>
+                  <LocateFixed /> Use my current location
+                </Button>
+                <div className="grid gap-4 sm:grid-cols-2">
+                  <div className="flex flex-col gap-1.5">
+                    <Label>Latitude</Label>
+                    <Controller
+                      control={control}
+                      name="weatherLatitude"
+                      render={({ field }) => (
+                        <Input
+                          type="number"
+                          step="any"
+                          value={field.value ?? ""}
+                          onChange={(e) => field.onChange(e.target.value === "" ? null : Number(e.target.value))}
+                        />
+                      )}
+                    />
+                  </div>
+                  <div className="flex flex-col gap-1.5">
+                    <Label>Longitude</Label>
+                    <Controller
+                      control={control}
+                      name="weatherLongitude"
+                      render={({ field }) => (
+                        <Input
+                          type="number"
+                          step="any"
+                          value={field.value ?? ""}
+                          onChange={(e) => field.onChange(e.target.value === "" ? null : Number(e.target.value))}
+                        />
+                      )}
+                    />
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
           </TabsContent>
         </Tabs>
 

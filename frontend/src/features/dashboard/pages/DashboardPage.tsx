@@ -19,6 +19,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useAppSelector } from "@/app/hooks";
 import { LiveClockWidget } from "../components/LiveClockWidget";
+import { WeatherWidget } from "@/features/weather/components/WeatherWidget";
 
 export default function DashboardPage() {
   const user = useAppSelector((s) => s.auth.user);
@@ -33,6 +34,7 @@ export default function DashboardPage() {
 
       <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
         <LiveClockWidget />
+        <WeatherWidget />
 
         <Card>
           <CardHeader>
@@ -134,7 +136,7 @@ export default function DashboardPage() {
       <Card>
         <CardHeader>
           <CardTitle>More on the way</CardTitle>
-          <CardDescription>Smart notifications and weather widgets land here once that module is built.</CardDescription>
+          <CardDescription>An admin panel for managing users, roles, and content lands here once that module is built.</CardDescription>
         </CardHeader>
       </Card>
     </div>

@@ -50,6 +50,8 @@ public class AppDbContext(DbContextOptions options) : DbContext(options)
     public DbSet<FestivalCalendarEntry> FestivalCalendarEntries => Set<FestivalCalendarEntry>();
     public DbSet<DailyQuote> DailyQuotes => Set<DailyQuote>();
     public DbSet<UserPrayerLog> UserPrayerLogs => Set<UserPrayerLog>();
+    public DbSet<UserDevice> UserDevices => Set<UserDevice>();
+    public DbSet<MedicineReminderLog> MedicineReminderLogs => Set<MedicineReminderLog>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

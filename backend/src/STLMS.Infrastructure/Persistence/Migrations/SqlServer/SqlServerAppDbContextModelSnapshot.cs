@@ -820,6 +820,56 @@ namespace STLMS.Infrastructure.Persistence.Migrations.SqlServer
                     b.ToTable("MedicineLogs", (string)null);
                 });
 
+            modelBuilder.Entity("STLMS.Domain.Entities.MedicineReminderLog", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid?>("CreatedById")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateOnly>("Date")
+                        .HasColumnType("date");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("Hour")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<Guid>("MedicineId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("Minute")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("ModifiedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid?>("ModifiedById")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("SentAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("MedicineId", "Date", "Hour", "Minute")
+                        .IsUnique();
+
+                    b.ToTable("MedicineReminderLogs", (string)null);
+                });
+
             modelBuilder.Entity("STLMS.Domain.Entities.MedicineTime", b =>
                 {
                     b.Property<Guid>("Id")
@@ -1418,6 +1468,9 @@ namespace STLMS.Infrastructure.Persistence.Migrations.SqlServer
                         .HasMaxLength(256)
                         .HasColumnType("nvarchar(256)");
 
+                    b.Property<bool>("EmailNotificationsEnabled")
+                        .HasColumnType("bit");
+
                     b.Property<DateTime?>("EmailVerificationExpiresAt")
                         .HasColumnType("datetime2");
 
@@ -1483,6 +1536,9 @@ namespace STLMS.Infrastructure.Persistence.Migrations.SqlServer
                     b.Property<double?>("PrayerLongitude")
                         .HasColumnType("float");
 
+                    b.Property<bool>("PushNotificationsEnabled")
+                        .HasColumnType("bit");
+
                     b.Property<Guid?>("ReligionId")
                         .HasColumnType("uniqueidentifier");
 
@@ -1510,6 +1566,12 @@ namespace STLMS.Infrastructure.Persistence.Migrations.SqlServer
 
                     b.Property<bool>("TwoFactorEnabled")
                         .HasColumnType("bit");
+
+                    b.Property<double?>("WeatherLatitude")
+                        .HasColumnType("float");
+
+                    b.Property<double?>("WeatherLongitude")
+                        .HasColumnType("float");
 
                     b.HasKey("Id");
 
@@ -1562,6 +1624,50 @@ namespace STLMS.Infrastructure.Persistence.Migrations.SqlServer
                         .IsUnique();
 
                     b.ToTable("UserAchievements", (string)null);
+                });
+
+            modelBuilder.Entity("STLMS.Domain.Entities.UserDevice", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid?>("CreatedById")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("FcmToken")
+                        .IsRequired()
+                        .HasMaxLength(4096)
+                        .HasColumnType("nvarchar(4096)");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime?>("ModifiedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid?>("ModifiedById")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Platform")
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId", "FcmToken")
+                        .IsUnique();
+
+                    b.ToTable("UserDevices", (string)null);
                 });
 
             modelBuilder.Entity("STLMS.Domain.Entities.UserPrayerLog", b =>
@@ -1879,6 +1985,17 @@ namespace STLMS.Infrastructure.Persistence.Migrations.SqlServer
                     b.Navigation("Medicine");
                 });
 
+            modelBuilder.Entity("STLMS.Domain.Entities.MedicineReminderLog", b =>
+                {
+                    b.HasOne("STLMS.Domain.Entities.Medicine", "Medicine")
+                        .WithMany()
+                        .HasForeignKey("MedicineId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Medicine");
+                });
+
             modelBuilder.Entity("STLMS.Domain.Entities.MedicineTime", b =>
                 {
                     b.HasOne("STLMS.Domain.Entities.Medicine", "Medicine")
@@ -2011,6 +2128,17 @@ namespace STLMS.Infrastructure.Persistence.Migrations.SqlServer
                         .IsRequired();
 
                     b.Navigation("Achievement");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("STLMS.Domain.Entities.UserDevice", b =>
+                {
+                    b.HasOne("STLMS.Domain.Entities.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("User");
                 });

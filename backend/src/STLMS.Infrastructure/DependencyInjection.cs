@@ -10,7 +10,9 @@ using STLMS.Infrastructure.BackgroundServices;
 using STLMS.Infrastructure.Caching;
 using STLMS.Infrastructure.ExternalServices.Auth;
 using STLMS.Infrastructure.ExternalServices.Email;
+using STLMS.Infrastructure.ExternalServices.Push;
 using STLMS.Infrastructure.ExternalServices.Religion;
+using STLMS.Infrastructure.ExternalServices.Weather;
 using STLMS.Infrastructure.Identity;
 using STLMS.Infrastructure.Persistence;
 using STLMS.Infrastructure.Persistence.Repositories;
@@ -39,7 +41,9 @@ public static class DependencyInjection
         services.AddSingleton<IExternalAuthValidator, MicrosoftAuthValidator>();
         services.AddScoped<IFileStorageService, LocalFileStorageService>();
         services.AddScoped<INotificationDispatcher, NotificationDispatcher>();
+        services.AddScoped<IPushSender, FcmPushSender>();
         services.AddHostedService<AlarmTriggerService>();
+        services.AddHostedService<MedicineReminderService>();
 
         services.AddHttpClient<IPrayerTimeProvider, AladhanPrayerTimeProvider>(client =>
         {
@@ -49,6 +53,11 @@ public static class DependencyInjection
         services.AddHttpClient<IHebrewCalendarProvider, HebcalProvider>(client =>
         {
             client.BaseAddress = new Uri("https://www.hebcal.com/");
+            client.Timeout = TimeSpan.FromSeconds(10);
+        });
+        services.AddHttpClient<IWeatherProvider, OpenMeteoWeatherProvider>(client =>
+        {
+            client.BaseAddress = new Uri("https://api.open-meteo.com/");
             client.Timeout = TimeSpan.FromSeconds(10);
         });
 

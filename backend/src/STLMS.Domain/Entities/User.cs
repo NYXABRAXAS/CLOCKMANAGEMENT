@@ -24,6 +24,14 @@ public class User : AuditableEntity
     public double? PrayerLongitude { get; set; }
     public int? PrayerCalculationMethod { get; set; } // Aladhan API method id, e.g. 2 = ISNA, 3 = MWL, 4 = Umm al-Qura
 
+    // Separate from PrayerLatitude/Longitude on purpose - a user's prayer-calculation location and
+    // their weather "home" location aren't guaranteed to be the same place.
+    public double? WeatherLatitude { get; set; }
+    public double? WeatherLongitude { get; set; }
+
+    public bool EmailNotificationsEnabled { get; set; } = true;
+    public bool PushNotificationsEnabled { get; set; } = true;
+
     public SubscriptionStatus SubscriptionStatus { get; set; } = SubscriptionStatus.Free;
     public DateTime? SubscriptionExpiresAt { get; set; }
 

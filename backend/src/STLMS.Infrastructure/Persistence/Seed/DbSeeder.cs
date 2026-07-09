@@ -11,7 +11,7 @@ public static class PermissionModules
     public static readonly string[] All =
     [
         "DASHBOARD", "USERS", "ROLES", "RELIGIONS", "SETTINGS", "AUDIT_LOGS", "PROFILE", "WORLD_CLOCK", "ALARMS", "TIMERS", "CALENDAR", "HEALTH",
-        "PRAYER_CENTER", "PRODUCTIVITY",
+        "PRAYER_CENTER", "PRODUCTIVITY", "NOTIFICATIONS", "WEATHER",
     ];
 }
 
@@ -95,6 +95,7 @@ public static class DbSeeder
         var selfServiceModules = new[]
         {
             "DASHBOARD", "SETTINGS", "PROFILE", "WORLD_CLOCK", "ALARMS", "TIMERS", "CALENDAR", "HEALTH", "PRAYER_CENTER", "PRODUCTIVITY",
+            "NOTIFICATIONS", "WEATHER",
         };
         Grant(premium, allPermissions.Where(p => selfServiceModules.Contains(p.Module)));
         Grant(standard, allPermissions.Where(p => selfServiceModules.Contains(p.Module)));

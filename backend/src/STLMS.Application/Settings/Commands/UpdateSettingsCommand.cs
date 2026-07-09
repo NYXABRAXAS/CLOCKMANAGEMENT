@@ -19,7 +19,11 @@ public record UpdateSettingsCommand(
     string? ReligionCode,
     double? PrayerLatitude,
     double? PrayerLongitude,
-    int? PrayerCalculationMethod) : IRequest<UserProfileDto>;
+    int? PrayerCalculationMethod,
+    double? WeatherLatitude,
+    double? WeatherLongitude,
+    bool EmailNotificationsEnabled,
+    bool PushNotificationsEnabled) : IRequest<UserProfileDto>;
 
 public class UpdateSettingsCommandValidator : AbstractValidator<UpdateSettingsCommand>
 {
@@ -35,6 +39,8 @@ public class UpdateSettingsCommandValidator : AbstractValidator<UpdateSettingsCo
         RuleFor(x => x.Theme).Must(ValidThemes.Contains).WithMessage("Theme must be 'light', 'dark', or 'system'.");
         RuleFor(x => x.PrayerLatitude).InclusiveBetween(-90, 90).When(x => x.PrayerLatitude.HasValue);
         RuleFor(x => x.PrayerLongitude).InclusiveBetween(-180, 180).When(x => x.PrayerLongitude.HasValue);
+        RuleFor(x => x.WeatherLatitude).InclusiveBetween(-90, 90).When(x => x.WeatherLatitude.HasValue);
+        RuleFor(x => x.WeatherLongitude).InclusiveBetween(-180, 180).When(x => x.WeatherLongitude.HasValue);
     }
 }
 
@@ -65,6 +71,10 @@ public class UpdateSettingsCommandHandler(IUnitOfWork uow) : IRequestHandler<Upd
         user.PrayerLatitude = request.PrayerLatitude;
         user.PrayerLongitude = request.PrayerLongitude;
         user.PrayerCalculationMethod = request.PrayerCalculationMethod;
+        user.WeatherLatitude = request.WeatherLatitude;
+        user.WeatherLongitude = request.WeatherLongitude;
+        user.EmailNotificationsEnabled = request.EmailNotificationsEnabled;
+        user.PushNotificationsEnabled = request.PushNotificationsEnabled;
 
         uow.Repository<User>().Update(user);
         await uow.SaveChangesAsync(ct);
