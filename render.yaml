@@ -16,6 +16,16 @@
 #
 # Redis is optional - if Connections__Redis is left blank, the API automatically falls back to an
 # in-memory cache (see STLMS.Infrastructure/DependencyInjection.cs).
+#
+# Weather needs no API key at all - it calls the free, keyless Open-Meteo API directly, chosen
+# specifically so this integration works out of the box with zero configuration (see
+# OpenMeteoWeatherProvider.cs).
+#
+# Push notifications (FCM) need a real Firebase project's service account JSON on disk at
+# Firebase__ServiceAccountJsonPath - not something a plain env var can provide. Without it the app
+# runs fine and just never sends push (logged, never thrown - see FcmPushSender.cs); wiring up a
+# real Firebase project requires Render's paid-tier "Secret Files" feature or an equivalent, which
+# isn't included in this free-tier blueprint.
 
 services:
   - type: web
@@ -60,9 +70,11 @@ services:
         sync: false
       - key: OAuth__Google__ClientId
         sync: false
+      - key: OAuth__Google__ClientSecret
+        sync: false
       - key: OAuth__Microsoft__ClientId
         sync: false
-      - key: OpenWeatherMap__ApiKey
+      - key: OAuth__Microsoft__ClientSecret
         sync: false
 
   - type: web
