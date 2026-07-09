@@ -11,6 +11,8 @@ export const adminApi = {
   unlockUser: (userId: string) => apiClient.post(`/admin/users/${userId}/unlock`).then((r) => r.data),
   assignUserRole: (userId: string, roleCode: string) =>
     apiClient.put(`/admin/users/${userId}/role`, { roleCode }).then((r) => r.data),
+  setUserSubscription: (userId: string, subscriptionStatus: string, expiresAt: string | null) =>
+    apiClient.put(`/admin/users/${userId}/subscription`, { subscriptionStatus, expiresAt }).then((r) => r.data),
 
   getRoles: () => apiClient.get<AdminRole[]>("/admin/roles").then((r) => r.data),
   getPermissions: () => apiClient.get<AdminPermission[]>("/admin/permissions").then((r) => r.data),

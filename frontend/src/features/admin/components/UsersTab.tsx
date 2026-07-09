@@ -12,6 +12,7 @@ import { toApiError } from "@/shared/lib/apiClient";
 
 const PAGE_SIZE = 20;
 const ROLE_OPTIONS = ["SUPER_ADMIN", "ADMIN", "PREMIUM_USER", "STANDARD_USER", "GUEST"];
+const SUBSCRIPTION_OPTIONS = ["Free", "Trial", "Active", "Expired", "Cancelled"];
 
 export function UsersTab() {
   const currentUser = useAppSelector((s) => s.auth.user);
@@ -51,6 +52,16 @@ export function UsersTab() {
     try {
       await adminApi.assignUserRole(userId, roleCode);
       toast.success("Role updated. The user must log out and back in for the change to take effect.");
+      invalidate();
+    } catch (err) {
+      toast.error(toApiError(err).message);
+    }
+  };
+
+  const onSubscriptionChange = async (userId: string, subscriptionStatus: string) => {
+    try {
+      await adminApi.setUserSubscription(userId, subscriptionStatus, null);
+      toast.success("Subscription updated.");
       invalidate();
     } catch (err) {
       toast.error(toApiError(err).message);
@@ -112,10 +123,22 @@ export function UsersTab() {
                       {u.isActive ? "Active" : "Inactive"}
                     </span>
                     {isLocked && <span className="rounded-full bg-amber-500/10 px-2 py-0.5 text-amber-600">Locked</span>}
-                    <span className="text-muted-foreground">{u.subscriptionStatus}</span>
                   </div>
 
                   <div className="flex items-center gap-2">
+                    <Select value={u.subscriptionStatus} onValueChange={(v) => onSubscriptionChange(u.id, v)} disabled={!canEdit}>
+                      <SelectTrigger className="h-8 w-28 text-xs">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {SUBSCRIPTION_OPTIONS.map((s) => (
+                          <SelectItem key={s} value={s}>
+                            {s}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+
                     <Select
                       value={u.roles[0] ?? ""}
                       onValueChange={(v) => onRoleChange(u.id, v)}

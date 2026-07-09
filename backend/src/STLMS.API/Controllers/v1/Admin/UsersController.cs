@@ -46,6 +46,14 @@ public class UsersController(IAppMediator mediator, ICurrentUserService currentU
         return Ok(new { success = true });
     }
 
+    [RequirePermission("USERS", "edit")]
+    [HttpPut("{userId:guid}/subscription")]
+    public async Task<IActionResult> SetSubscription(Guid userId, SetUserSubscriptionRequest request, CancellationToken ct)
+    {
+        await mediator.SendAsync(new SetUserSubscriptionCommand(currentUser.UserId!.Value, userId, request.SubscriptionStatus, request.ExpiresAt), ct);
+        return Ok(new { success = true });
+    }
+
     [RequirePermission("USERS", "view")]
     [HttpGet("export")]
     public async Task<IActionResult> Export(CancellationToken ct)

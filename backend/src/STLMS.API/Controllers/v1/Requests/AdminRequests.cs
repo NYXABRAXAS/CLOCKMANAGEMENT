@@ -4,6 +4,8 @@ public record SetUserActiveRequest(bool IsActive);
 
 public record AssignUserRoleRequest(string RoleCode);
 
+public record SetUserSubscriptionRequest(string SubscriptionStatus, DateTime? ExpiresAt);
+
 public record SetRolePermissionRequest(bool Granted);
 
 public record CreateReligionRequest(string Code, string Name, int SortOrder);
