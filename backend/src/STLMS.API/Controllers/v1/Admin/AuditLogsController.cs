@@ -18,4 +18,11 @@ public class AuditLogsController(IAppMediator mediator) : ControllerBase
         var result = await mediator.SendAsync(new GetAuditLogsQuery(page, pageSize), ct);
         return Ok(result);
     }
+
+    [HttpGet("export")]
+    public async Task<IActionResult> Export(CancellationToken ct)
+    {
+        var file = await mediator.SendAsync(new ExportAuditLogsQuery(), ct);
+        return File(file.Content, file.ContentType, file.FileName);
+    }
 }

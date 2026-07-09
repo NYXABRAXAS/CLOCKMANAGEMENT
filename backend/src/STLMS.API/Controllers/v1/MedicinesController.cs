@@ -79,4 +79,12 @@ public class MedicinesController(IAppMediator mediator, ICurrentUserService curr
         await mediator.SendAsync(new DeleteMedicineCommand(currentUser.UserId!.Value, medicineId), ct);
         return Ok(new { success = true });
     }
+
+    [RequirePermission("HEALTH", "view")]
+    [HttpGet("export")]
+    public async Task<IActionResult> Export(CancellationToken ct)
+    {
+        var file = await mediator.SendAsync(new ExportMedicineLogsQuery(currentUser.UserId!.Value), ct);
+        return File(file.Content, file.ContentType, file.FileName);
+    }
 }

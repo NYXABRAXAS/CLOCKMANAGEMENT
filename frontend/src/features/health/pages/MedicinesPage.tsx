@@ -1,7 +1,7 @@
 import * as React from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { Check, Loader2, Pencil, Plus, Trash2, X } from "lucide-react";
+import { Check, Download, Loader2, Pencil, Plus, Trash2, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { useAppSelector } from "@/app/hooks";
@@ -79,6 +79,14 @@ export default function MedicinesPage() {
   const logStatus = (medicineId: string, hour: number, minute: number) =>
     logs?.find((l) => l.medicineId === medicineId && l.scheduledHour === hour && l.scheduledMinute === minute)?.status;
 
+  const onExport = async () => {
+    try {
+      await medicinesApi.exportCsv();
+    } catch (err) {
+      toast.error(toApiError(err).message);
+    }
+  };
+
   return (
     <div className="mx-auto flex max-w-3xl flex-col gap-6">
       <div className="flex items-center justify-between">
@@ -86,9 +94,14 @@ export default function MedicinesPage() {
           <h1 className="text-2xl font-semibold">Medicines</h1>
           <p className="text-sm text-muted-foreground">Track today's doses. Reminders show here, not as alarms yet.</p>
         </div>
-        <Button onClick={openCreate}>
-          <Plus /> New medicine
-        </Button>
+        <div className="flex gap-2">
+          <Button variant="outline" onClick={onExport}>
+            <Download /> Export CSV
+          </Button>
+          <Button onClick={openCreate}>
+            <Plus /> New medicine
+          </Button>
+        </div>
       </div>
 
       {isLoading && (

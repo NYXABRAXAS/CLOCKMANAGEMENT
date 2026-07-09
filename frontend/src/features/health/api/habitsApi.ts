@@ -1,4 +1,5 @@
 import { apiClient } from "@/shared/lib/apiClient";
+import { fetchAndDownload } from "@/shared/lib/downloadBlob";
 import type { Habit, ToggleHabitLogResult } from "@/types/health";
 
 export interface HabitPayload {
@@ -16,4 +17,5 @@ export const habitsApi = {
   toggleLog: (id: string, date: string, completed: boolean) =>
     apiClient.post<ToggleHabitLogResult>(`/habits/${id}/log`, { date, completed }).then((r) => r.data),
   remove: (id: string) => apiClient.delete(`/habits/${id}`).then((r) => r.data),
+  exportCsv: () => fetchAndDownload(apiClient, "/habits/export", "habit-logs.csv"),
 };

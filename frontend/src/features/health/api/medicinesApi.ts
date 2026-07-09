@@ -1,4 +1,5 @@
 import { apiClient } from "@/shared/lib/apiClient";
+import { fetchAndDownload } from "@/shared/lib/downloadBlob";
 import type { Medicine, MedicineLog, MedicineLogStatus, MedicineTime } from "@/types/health";
 
 export interface MedicinePayload {
@@ -19,4 +20,5 @@ export const medicinesApi = {
   logDose: (id: string, data: { scheduledDate: string; scheduledHour: number; scheduledMinute: number; status: MedicineLogStatus }) =>
     apiClient.post(`/medicines/${id}/log`, data).then((r) => r.data),
   remove: (id: string) => apiClient.delete(`/medicines/${id}`).then((r) => r.data),
+  exportCsv: () => fetchAndDownload(apiClient, "/medicines/export", "medicine-logs.csv"),
 };

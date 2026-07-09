@@ -45,4 +45,12 @@ public class UsersController(IAppMediator mediator, ICurrentUserService currentU
         await mediator.SendAsync(new AssignUserRoleCommand(currentUser.UserId!.Value, userId, request.RoleCode), ct);
         return Ok(new { success = true });
     }
+
+    [RequirePermission("USERS", "view")]
+    [HttpGet("export")]
+    public async Task<IActionResult> Export(CancellationToken ct)
+    {
+        var file = await mediator.SendAsync(new ExportUsersQuery(), ct);
+        return File(file.Content, file.ContentType, file.FileName);
+    }
 }

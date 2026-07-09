@@ -25,6 +25,8 @@ public static class DependencyInjection
 {
     public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration configuration)
     {
+        QuestPDF.Settings.License = QuestPDF.Infrastructure.LicenseType.Community;
+
         AddPersistence(services, configuration);
         AddCaching(services, configuration);
 
@@ -42,6 +44,7 @@ public static class DependencyInjection
         services.AddScoped<IFileStorageService, LocalFileStorageService>();
         services.AddScoped<INotificationDispatcher, NotificationDispatcher>();
         services.AddScoped<IPushSender, FcmPushSender>();
+        services.AddSingleton<IExportService, ExportService>();
         services.AddHostedService<AlarmTriggerService>();
         services.AddHostedService<MedicineReminderService>();
 

@@ -19,4 +19,11 @@ public class ProductivityController(IAppMediator mediator, ICurrentUserService c
         var result = await mediator.SendAsync(new GetProductivitySummaryQuery(currentUser.UserId!.Value, from, to), ct);
         return Ok(result);
     }
+
+    [HttpGet("export")]
+    public async Task<IActionResult> Export([FromQuery] DateOnly from, [FromQuery] DateOnly to, [FromQuery] string format = "csv", CancellationToken ct = default)
+    {
+        var file = await mediator.SendAsync(new ExportProductivityReportQuery(currentUser.UserId!.Value, from, to, format), ct);
+        return File(file.Content, file.ContentType, file.FileName);
+    }
 }

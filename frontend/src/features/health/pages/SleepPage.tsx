@@ -1,7 +1,7 @@
 import * as React from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { Loader2, Moon, Trash2 } from "lucide-react";
+import { Download, Loader2, Moon, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -81,11 +81,24 @@ export default function SleepPage() {
 
   const avgMinutes = logs && logs.length > 0 ? Math.round(logs.slice(0, 7).reduce((sum, l) => sum + l.durationMinutes, 0) / Math.min(7, logs.length)) : null;
 
+  const onExport = async () => {
+    try {
+      await sleepApi.exportCsv();
+    } catch (err) {
+      toast.error(toApiError(err).message);
+    }
+  };
+
   return (
     <div className="mx-auto flex max-w-2xl flex-col gap-6">
-      <div>
-        <h1 className="text-2xl font-semibold">Sleep Tracker</h1>
-        <p className="text-sm text-muted-foreground">Log last night's sleep and track your average.</p>
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-2xl font-semibold">Sleep Tracker</h1>
+          <p className="text-sm text-muted-foreground">Log last night's sleep and track your average.</p>
+        </div>
+        <Button variant="outline" onClick={onExport}>
+          <Download /> Export CSV
+        </Button>
       </div>
 
       <Card>

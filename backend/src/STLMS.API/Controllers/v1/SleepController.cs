@@ -49,4 +49,12 @@ public class SleepController(IAppMediator mediator, ICurrentUserService currentU
         await mediator.SendAsync(new DeleteSleepLogCommand(currentUser.UserId!.Value, sleepLogId), ct);
         return Ok(new { success = true });
     }
+
+    [RequirePermission("HEALTH", "view")]
+    [HttpGet("export")]
+    public async Task<IActionResult> Export(CancellationToken ct)
+    {
+        var file = await mediator.SendAsync(new ExportSleepLogsQuery(currentUser.UserId!.Value), ct);
+        return File(file.Content, file.ContentType, file.FileName);
+    }
 }

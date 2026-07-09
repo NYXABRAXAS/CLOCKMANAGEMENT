@@ -60,4 +60,12 @@ public class HabitsController(IAppMediator mediator, ICurrentUserService current
         await mediator.SendAsync(new DeleteHabitCommand(currentUser.UserId!.Value, habitId), ct);
         return Ok(new { success = true });
     }
+
+    [RequirePermission("HEALTH", "view")]
+    [HttpGet("export")]
+    public async Task<IActionResult> Export(CancellationToken ct)
+    {
+        var file = await mediator.SendAsync(new ExportHabitLogsQuery(currentUser.UserId!.Value), ct);
+        return File(file.Content, file.ContentType, file.FileName);
+    }
 }

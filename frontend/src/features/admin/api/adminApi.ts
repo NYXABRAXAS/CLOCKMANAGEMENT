@@ -1,9 +1,11 @@
 import { apiClient } from "@/shared/lib/apiClient";
+import { fetchAndDownload } from "@/shared/lib/downloadBlob";
 import type { AdminAuditLog, AdminPermission, AdminRole, AdminUser, PagedResult } from "@/types/admin";
 
 export const adminApi = {
   getUsers: (params: { search?: string; page: number; pageSize: number }) =>
     apiClient.get<PagedResult<AdminUser>>("/admin/users", { params }).then((r) => r.data),
+  exportUsersCsv: () => fetchAndDownload(apiClient, "/admin/users/export", "users.csv"),
   setUserActive: (userId: string, isActive: boolean) =>
     apiClient.put(`/admin/users/${userId}/active`, { isActive }).then((r) => r.data),
   unlockUser: (userId: string) => apiClient.post(`/admin/users/${userId}/unlock`).then((r) => r.data),
@@ -17,4 +19,5 @@ export const adminApi = {
 
   getAuditLogs: (params: { page: number; pageSize: number }) =>
     apiClient.get<PagedResult<AdminAuditLog>>("/admin/audit-logs", { params }).then((r) => r.data),
+  exportAuditLogsCsv: () => fetchAndDownload(apiClient, "/admin/audit-logs/export", "audit-log.csv"),
 };

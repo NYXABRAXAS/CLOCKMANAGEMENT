@@ -1,7 +1,7 @@
 import * as React from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { ChevronLeft, ChevronRight, Loader2, Lock, LockOpen, Search } from "lucide-react";
+import { ChevronLeft, ChevronRight, Download, Loader2, Lock, LockOpen, Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -59,19 +59,32 @@ export function UsersTab() {
 
   const totalPages = data ? Math.max(1, Math.ceil(data.totalCount / PAGE_SIZE)) : 1;
 
+  const onExport = async () => {
+    try {
+      await adminApi.exportUsersCsv();
+    } catch (err) {
+      toast.error(toApiError(err).message);
+    }
+  };
+
   return (
     <div className="flex flex-col gap-4">
-      <div className="relative max-w-sm">
-        <Search className="absolute left-2.5 top-2.5 size-4 text-muted-foreground" />
-        <Input
-          placeholder="Search by name or email..."
-          className="pl-8"
-          value={search}
-          onChange={(e) => {
-            setSearch(e.target.value);
-            setPage(1);
-          }}
-        />
+      <div className="flex items-center justify-between gap-3">
+        <div className="relative max-w-sm flex-1">
+          <Search className="absolute left-2.5 top-2.5 size-4 text-muted-foreground" />
+          <Input
+            placeholder="Search by name or email..."
+            className="pl-8"
+            value={search}
+            onChange={(e) => {
+              setSearch(e.target.value);
+              setPage(1);
+            }}
+          />
+        </div>
+        <Button variant="outline" onClick={onExport}>
+          <Download /> Export CSV
+        </Button>
       </div>
 
       {isLoading ? (

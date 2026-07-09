@@ -1,9 +1,13 @@
 import { useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { Loader2, Flame, Trophy, Timer, ListChecks, Sparkles } from "lucide-react";
+import { toast } from "sonner";
+import { Download, Loader2, Flame, Trophy, Timer, ListChecks, Sparkles } from "lucide-react";
 import { Area, AreaChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
+import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { productivityApi } from "../api/productivityApi";
+import { toApiError } from "@/shared/lib/apiClient";
 
 const RANGE_DAYS = 30;
 const PRODUCTIVE_THRESHOLD = 60;
@@ -51,13 +55,35 @@ export default function ProductivityPage() {
     score: d.score === null ? null : Math.round(d.score),
   }));
 
+  const onExport = async (format: "csv" | "excel" | "pdf") => {
+    try {
+      await productivityApi.exportReport(from, to, format);
+    } catch (err) {
+      toast.error(toApiError(err).message);
+    }
+  };
+
   return (
     <div className="mx-auto flex max-w-5xl flex-col gap-6">
-      <div>
-        <h1 className="text-2xl font-semibold">Productivity Dashboard</h1>
-        <p className="text-sm text-muted-foreground">
-          A rolling score built from your habits, medicines, sleep, focus sessions{data.totalPrayersLogged > 0 || today?.components.prayersPercent !== null ? ", and prayers" : ""} over the last {RANGE_DAYS} days.
-        </p>
+      <div className="flex items-start justify-between gap-4">
+        <div>
+          <h1 className="text-2xl font-semibold">Productivity Dashboard</h1>
+          <p className="text-sm text-muted-foreground">
+            A rolling score built from your habits, medicines, sleep, focus sessions{data.totalPrayersLogged > 0 || today?.components.prayersPercent !== null ? ", and prayers" : ""} over the last {RANGE_DAYS} days.
+          </p>
+        </div>
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="outline">
+              <Download /> Export
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end">
+            <DropdownMenuItem onClick={() => onExport("csv")}>CSV</DropdownMenuItem>
+            <DropdownMenuItem onClick={() => onExport("excel")}>Excel</DropdownMenuItem>
+            <DropdownMenuItem onClick={() => onExport("pdf")}>PDF</DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
       </div>
 
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
