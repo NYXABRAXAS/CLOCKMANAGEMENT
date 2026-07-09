@@ -20,6 +20,7 @@ import MedicinesPage from "@/features/health/pages/MedicinesPage";
 import HabitsPage from "@/features/health/pages/HabitsPage";
 import SleepPage from "@/features/health/pages/SleepPage";
 import ReligionCenterPage from "@/features/religionCenter/pages/ReligionCenterPage";
+import ProductivityPage from "@/features/productivity/pages/ProductivityPage";
 
 export const router = createBrowserRouter([
   {
@@ -50,6 +51,7 @@ export const router = createBrowserRouter([
           { path: "/habits", element: <HabitsPage /> },
           { path: "/sleep", element: <SleepPage /> },
           { path: "/prayer-center", element: <ReligionCenterPage /> },
+          { path: "/productivity", element: <ProductivityPage /> },
           { path: "/settings", element: <SettingsPage /> },
           { path: "/profile", element: <ProfilePage /> },
         ],

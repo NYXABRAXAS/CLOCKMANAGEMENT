@@ -1,6 +1,7 @@
 import { Link } from "react-router";
 import {
   AlarmClock,
+  BarChart3,
   CalendarDays,
   Clock,
   Coffee,
@@ -112,6 +113,11 @@ export default function DashboardPage() {
               </Link>
             </Button>
             <Button variant="outline" className="justify-start" asChild>
+              <Link to="/productivity">
+                <BarChart3 /> Productivity
+              </Link>
+            </Button>
+            <Button variant="outline" className="justify-start" asChild>
               <Link to="/profile">
                 <UserIcon /> Edit profile
               </Link>
@@ -128,7 +134,7 @@ export default function DashboardPage() {
       <Card>
         <CardHeader>
           <CardTitle>More on the way</CardTitle>
-          <CardDescription>Productivity insights land here once that module is built.</CardDescription>
+          <CardDescription>Smart notifications and weather widgets land here once that module is built.</CardDescription>
         </CardHeader>
       </Card>
     </div>

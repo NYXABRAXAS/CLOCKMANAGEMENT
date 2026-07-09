@@ -1,5 +1,6 @@
 import {
   AlarmClock,
+  BarChart3,
   CalendarDays,
   Clock,
   Coffee,
@@ -36,6 +37,7 @@ export const navItems: NavItem[] = [
   { to: "/habits", label: "Habits", icon: ListChecks },
   { to: "/sleep", label: "Sleep Tracker", icon: Moon },
   { to: "/prayer-center", label: "Prayer & Festival Center", icon: Sparkles },
+  { to: "/productivity", label: "Productivity", icon: BarChart3 },
   { to: "/settings", label: "Settings", icon: Settings },
   { to: "/profile", label: "Profile", icon: User },
 ];
