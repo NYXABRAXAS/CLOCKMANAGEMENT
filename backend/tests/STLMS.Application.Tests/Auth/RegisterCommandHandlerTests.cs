@@ -47,6 +47,34 @@ public class RegisterCommandHandlerTests
         Assert.Equal(user.Id, result.UserId);
         Assert.True(result.VerificationEmailSent);
         Assert.Null(result.DevOnlyVerificationToken); // not exposed when the email actually sent
+        Assert.Equal("UTC", user.TimezoneId); // no TimezoneId supplied - falls back to the entity default
+    }
+
+    [Fact]
+    public async Task Handle_WithARealTimezoneId_StoresItInsteadOfTheUtcDefault()
+    {
+        _emailSender.Setup(e => e.SendAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(true);
+
+        await BuildSut().HandleAsync(
+            new RegisterCommand("Ada", "Lovelace", "ada@example.com", "Sup3r$ecret", "Asia/Kolkata"), CancellationToken.None);
+
+        var user = _uow.FakeRepository<User>().Items.Single();
+        Assert.Equal("Asia/Kolkata", user.TimezoneId);
+    }
+
+    [Fact]
+    public async Task Handle_WithAnUnrecognizedTimezoneId_FallsBackToUtcRatherThanRejectingRegistration()
+    {
+        _emailSender.Setup(e => e.SendAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(true);
+
+        var result = await BuildSut().HandleAsync(
+            new RegisterCommand("Ada", "Lovelace", "ada@example.com", "Sup3r$ecret", "Not/A_Real_Zone"), CancellationToken.None);
+
+        var user = _uow.FakeRepository<User>().Items.Single();
+        Assert.Equal("UTC", user.TimezoneId);
+        Assert.Equal(user.Id, result.UserId); // registration still succeeds
     }
 
     [Fact]

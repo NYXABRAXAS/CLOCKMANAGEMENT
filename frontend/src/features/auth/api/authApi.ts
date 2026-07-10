@@ -6,7 +6,10 @@ export const authApi = {
     apiClient
       .post<{ userId: string; email: string; verificationEmailSent: boolean; devOnlyVerificationToken: string | null }>(
         "/auth/register",
-        data,
+        // Silently captures the browser's real IANA zone rather than defaulting new accounts to
+        // UTC - without this, alarms/reminders a user sets using their own local wall-clock time
+        // get evaluated against UTC server-side until they happen to visit Settings and fix it.
+        { ...data, timezoneId: Intl.DateTimeFormat().resolvedOptions().timeZone },
       )
       .then((r) => r.data),
 

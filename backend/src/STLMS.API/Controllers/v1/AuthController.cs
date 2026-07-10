@@ -27,7 +27,8 @@ public class AuthController(IAppMediator mediator, AuthCookieService cookies, IC
     [HttpPost("register")]
     public async Task<IActionResult> Register(RegisterRequest request, CancellationToken ct)
     {
-        var result = await mediator.SendAsync(new RegisterCommand(request.FirstName, request.LastName, request.Email, request.Password), ct);
+        var result = await mediator.SendAsync(
+            new RegisterCommand(request.FirstName, request.LastName, request.Email, request.Password, request.TimezoneId), ct);
         return Ok(result);
     }
 

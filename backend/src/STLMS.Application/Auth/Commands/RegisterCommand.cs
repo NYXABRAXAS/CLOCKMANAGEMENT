@@ -8,7 +8,8 @@ using STLMS.Domain.Interfaces;
 
 namespace STLMS.Application.Auth.Commands;
 
-public record RegisterCommand(string FirstName, string LastName, string Email, string Password) : IRequest<RegisterResult>;
+public record RegisterCommand(string FirstName, string LastName, string Email, string Password, string? TimezoneId = null)
+    : IRequest<RegisterResult>;
 
 public record RegisterResult(Guid UserId, string Email, bool VerificationEmailSent, string? DevOnlyVerificationToken);
 
@@ -52,6 +53,7 @@ public class RegisterCommandHandler(
             EmailVerified = false,
             EmailVerificationTokenHash = Hash(rawToken),
             EmailVerificationExpiresAt = DateTime.UtcNow.AddHours(24),
+            TimezoneId = ResolveTimezone(request.TimezoneId),
         };
         await uow.Repository<User>().AddAsync(user, ct);
         await uow.SaveChangesAsync(ct);
@@ -77,4 +79,25 @@ public class RegisterCommandHandler(
 
     private static string GenerateToken() => Convert.ToHexString(RandomNumberGenerator.GetBytes(32));
     private static string Hash(string raw) => Convert.ToHexString(SHA256.HashData(System.Text.Encoding.UTF8.GetBytes(raw)));
+
+    // Falls back to the User entity's own "UTC" default for anything unrecognized, rather than
+    // rejecting registration over a bad timezone string - alarms/reminders being off by a few
+    // hours until the user fixes it in Settings is far better than blocking signup entirely.
+    private static string ResolveTimezone(string? timezoneId)
+    {
+        if (string.IsNullOrWhiteSpace(timezoneId)) return "UTC";
+        try
+        {
+            TimeZoneInfo.FindSystemTimeZoneById(timezoneId);
+            return timezoneId;
+        }
+        catch (TimeZoneNotFoundException)
+        {
+            return "UTC";
+        }
+        catch (InvalidTimeZoneException)
+        {
+            return "UTC";
+        }
+    }
 }

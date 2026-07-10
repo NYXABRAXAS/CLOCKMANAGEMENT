@@ -31,6 +31,13 @@ function partsInZone(date: Date, timeZone: string) {
 
 const WEEKDAY_BIT: Record<string, number> = { Sun: 1, Mon: 2, Tue: 4, Wed: 8, Thu: 16, Fri: 32, Sat: 64 };
 
+// How late this tab can notice an alarm it missed (e.g. the tab was hidden/backgrounded, or the
+// browser throttled its timers) and still ring it, rather than only matching the exact live-
+// ticking minute. Doesn't cross midnight - an alarm at 23:58 won't catch up at 00:02, which is an
+// accepted simplification (matches the same-calendar-day dedupe model below) rather than a fix
+// for every possible miss.
+const CATCH_UP_WINDOW_MINUTES = 5;
+
 interface MathChallenge {
   a: number;
   b: number;
@@ -69,7 +76,8 @@ export function AlarmRingingOverlay() {
       }
 
       const { hour, minute, dateKey, weekday } = partsInZone(now, timeZone);
-      if (hour !== alarm.hour || minute !== alarm.minute) continue;
+      const minutesSinceScheduled = hour * 60 + minute - (alarm.hour * 60 + alarm.minute);
+      if (minutesSinceScheduled < 0 || minutesSinceScheduled > CATCH_UP_WINDOW_MINUTES) continue;
 
       const isOneTime = alarm.repeatDaysMask === 0;
       const scheduledToday = isOneTime || (alarm.repeatDaysMask & (WEEKDAY_BIT[weekday] ?? 0)) !== 0;
