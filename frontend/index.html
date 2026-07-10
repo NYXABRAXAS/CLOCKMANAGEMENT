@@ -5,6 +5,15 @@
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Smart Time &amp; Lifestyle Management System</title>
+
+    <!-- iOS "Add to Home Screen" doesn't read the web manifest the way Android/desktop Chrome
+         does - it needs these tags explicitly to use a standalone (no Safari chrome) window and
+         the right home-screen icon. -->
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <meta name="apple-mobile-web-app-title" content="STLMS" />
+    <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png" />
+    <meta name="theme-color" content="#4f46e5" />
   </head>
   <body>
     <div id="root"></div>

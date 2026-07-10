@@ -19,6 +19,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useAppSelector } from "@/app/hooks";
 import { LiveClockWidget } from "../components/LiveClockWidget";
+import { InstallAppCard } from "../components/InstallAppCard";
 import { WeatherWidget } from "@/features/weather/components/WeatherWidget";
 
 export default function DashboardPage() {
@@ -35,6 +36,7 @@ export default function DashboardPage() {
       <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
         <LiveClockWidget />
         <WeatherWidget />
+        <InstallAppCard />
 
         <Card>
           <CardHeader>
